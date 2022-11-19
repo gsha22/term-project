@@ -13,3 +13,8 @@ class Gravity:
         # if isCollision(y):
         #     return (y, -v, a)
         return (y, v, a)
+
+class Collisions:
+    @staticmethod
+    def collide(y, v, a, t):
+        pass

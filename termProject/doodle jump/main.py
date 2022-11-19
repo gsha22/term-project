@@ -9,9 +9,15 @@ import math
 
 from Physics import Gravity
 
+from Platforms import Platform
+
 def appStarted(app): 
     # SPRITES:
     app.doodle = app.loadImage("doodle.png")
+    app.doodle = app.scaleImage(app.doodle, 2/3)
+
+    app.platform = app.loadImage("green_platform.png")
+    app.platform = app.scaleImage(app.platform, 2/3)
 
     app.doodleX = 300
     app.doodleY = 400
@@ -19,7 +25,8 @@ def appStarted(app):
     app.a = 6
     app.time = 0
     app.seconds = 0
-    app.player = [app.doodleY, app.doodleV, app.a, app.time]
+    
+    app.platforms = []
 
 # hello
 
@@ -44,14 +51,13 @@ def drawDoodle(app, canvas):
 
 
 def drawPlatform(app, canvas):
-    canvas.create_rectangle(100, 950, 500, 1000, fill = 'black')
-    pass
+    canvas.create_image(300, 600, image=ImageTk.PhotoImage(app.platform))
 
 
 def redrawAll(app, canvas):
     drawDoodle(app, canvas)
     drawPlatform(app, canvas)
-    canvas.create_text(300, 100, text=f"yPos = {app.doodleY}\n v = {app.doodleV}")
+    canvas.create_text(300, 100, text=f"xPos = {app.doodleX}, yPos = {app.doodleY}\n v = {app.doodleV}")
 
 runApp(width = 600, height = 1000)
 
