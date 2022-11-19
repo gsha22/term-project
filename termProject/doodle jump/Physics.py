@@ -16,5 +16,11 @@ class Gravity:
 
 class Collisions:
     @staticmethod
-    def collide(y, v, a, t):
-        pass
+    def collide(x, y, v, t, platformHitboxes):
+        y = y + 15
+        for platform in platformHitboxes:
+            if ( platform[0] <= x <= platform[2] and
+                 platform[1] <= y <= platform[3] ):
+                v = -v 
+                t = 0
+                return (v, t)
