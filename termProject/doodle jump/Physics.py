@@ -15,15 +15,13 @@ class Gravity:
         return (y, v, a)
     
     @staticmethod
-    def jump(y0, a):
-        v0 = 5
-        yf = ((v0)**2)/((2*a)+y0)
-        return yf
+    def jump():
+        return -100
 
 class Collisions:
     @staticmethod
     def isCollision(x, y, platformHitboxes):
-        y = y + 15
+        y = y + 30
         for platform in platformHitboxes:
             if ( (platform[0] <= x <= platform[2]) and
                  (platform[1] <= y <= platform[3]) ):
