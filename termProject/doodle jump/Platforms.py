@@ -14,13 +14,13 @@ class Platform:
         import random
         # cx = random.randint(50, 550)
         cx = 300
-        cy = 800
+        cy = 500
         return cx, cy
 
     @staticmethod
     def createHitbox(cx, cy):
-        top = cy + 10
-        bottom = cy - 10
+        bottom = cy + 10
+        top = cy - 10
         rightSide = cx + 42.5
         leftSide = cx - 42.5
         return leftSide, top, rightSide, bottom

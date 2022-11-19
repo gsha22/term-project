@@ -39,22 +39,17 @@ def appStarted(app):
 def timerFired(app):
     if app.time == 0: spawnPlatforms_and_Hitboxes(app)
     app.time += 1
+    if app.time > 15:
+        app.time = 15
     # if app.time % 10 == 0:
     #     app.seconds += 1
-    (y, v, a) = Gravity.falling(app.player.cy, app.player.yv, app.a, app.time)
-    if len(app.hitboxes) > 0:
-        (v, t) = Collisions.collide(app.player.cx, app.player.cy, app.player.yv, app.time, app.hitboxes)
-    app.player.cy = y
-    app.player.v = v
-    app.a = a
-    app.t = t
-    
-
-# def mousePressed(app, event):
-#     app.doodleX = event.x
-#     app.doodleY = event.y
-#     app.doodleV = 0
-#     app.time = 0
+    if app.player.yv >= 0:
+        (app.player.cy, app.player.yv, a) = Gravity.falling(app.player.cy, app.player.yv, app.a, app.time)
+    if Collisions.isCollision(app.player.cx, app.player.cy, app.hitboxes) and app.player.yv > 0:
+        y = Gravity.jump(app.player.cy, app.a)
+        app.player.yv = 0
+        app.player.cy = y
+        app.time = 0
 
 
 def keyPressed(app, event):
