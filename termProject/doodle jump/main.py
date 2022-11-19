@@ -41,14 +41,9 @@ def timerFired(app):
     app.time += 1
     if app.time > 15:
         app.time = 15
-    # if app.time % 10 == 0:
-    #     app.seconds += 1
-    if app.player.yv >= 0:
-        (app.player.cy, app.player.yv, a) = Gravity.falling(app.player.cy, app.player.yv, app.a, app.time)
+    (app.player.cy, app.player.yv, a) = Gravity.falling(app.player.cy, app.player.yv, app.a, app.time)
     if Collisions.isCollision(app.player.cx, app.player.cy, app.hitboxes) and app.player.yv > 0:
-        y = Gravity.jump(app.player.cy, app.a)
-        app.player.yv = 0
-        app.player.cy = y
+        app.player.yv = Gravity.jump()
         app.time = 0
 
 
