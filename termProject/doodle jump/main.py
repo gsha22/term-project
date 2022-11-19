@@ -24,7 +24,7 @@ def appStarted(app):
     app.seconds = 0
     app.player = [app.doodleY, app.doodleV, app.a, app.time]
 
-
+# hello
 
 def timerFired(app):
     app.time += 1
