@@ -12,7 +12,8 @@ class Platform:
     def spawn():
         # spawns a bunch at the beginning, then starts spawning them above screen
         import random
-        cx = random.randint(50, 550)
+        # cx = random.randint(50, 550)
+        cx = 300
         cy = 800
         return cx, cy
 

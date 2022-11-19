@@ -12,6 +12,8 @@ from Physics import Collisions
 
 from Platforms import Platform
 
+from Player import Player
+
 def appStarted(app): 
     # SPRITES:
     app.doodle = app.loadImage("doodle.png")
@@ -20,9 +22,12 @@ def appStarted(app):
     app.platform = app.loadImage("green_platform.png")
     app.platform = app.scaleImage(app.platform, 2/3)
 
-    app.doodleX = 300
-    app.doodleY = 400
-    app.doodleV = 0
+    # app.doodleX = 300
+    # app.doodleY = 400
+    # app.doodleV = 0
+
+    app.player = Player(300, 400, 0)
+
     app.a = 6
     app.time = 0
     app.seconds = 0
@@ -36,14 +41,14 @@ def timerFired(app):
     app.time += 1
     # if app.time % 10 == 0:
     #     app.seconds += 1
-    (y, v, a) = Gravity.falling(app.doodleY, app.doodleV, app.a, app.time)
-    # if len(app.hitboxes) > 0:
-        # (v, t) = Collisions.collide(app.doodleX, app.doodleY, app.doodleV, app.time, app.hitboxes)
-    app.doodleY = y
-    app.doodleV = v
+    (y, v, a) = Gravity.falling(app.player.cy, app.player.yv, app.a, app.time)
+    if len(app.hitboxes) > 0:
+        (v, t) = Collisions.collide(app.player.cx, app.player.cy, app.player.yv, app.time, app.hitboxes)
+    app.player.cy = y
+    app.player.v = v
     app.a = a
-    # app.t = t
-        
+    app.t = t
+    
 
 # def mousePressed(app, event):
 #     app.doodleX = event.x
@@ -54,13 +59,13 @@ def timerFired(app):
 
 def keyPressed(app, event):
     if event.key == "a":
-        app.doodleX -= 5
+        app.player.xMovements(-5)
     elif event.key == "d":
-        app.doodleX += 5
+        app.player.xMovements(5)
 
 
 def drawDoodle(app, canvas):
-    canvas.create_image(app.doodleX, app.doodleY, image=ImageTk.PhotoImage(app.doodle))
+    canvas.create_image(app.player.cx, app.player.cy, image=ImageTk.PhotoImage(app.doodle))
 
 
 def spawnPlatforms_and_Hitboxes(app):
@@ -78,7 +83,9 @@ def drawPlatform(app, canvas):
 def redrawAll(app, canvas):
     drawDoodle(app, canvas)
     drawPlatform(app, canvas)
-    canvas.create_text(300, 100, text=f"xPos = {app.doodleX}, yPos = {app.doodleY}\n v = {app.doodleV}")
+    canvas.create_text(300, 100, 
+    text= f"""xPos = {app.player.cx}, yPos = {app.player.cy} 
+            v = {app.player.yv}, t = {app.time}""")
 
 runApp(width = 600, height = 1000)
 
