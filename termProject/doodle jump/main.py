@@ -9,9 +9,6 @@ import math
 
 from Physics import Gravity
 
-
-
-
 def appStarted(app): 
     # SPRITES:
     app.doodle = app.loadImage("doodle.png")
@@ -19,7 +16,7 @@ def appStarted(app):
     app.doodleX = 300
     app.doodleY = 400
     app.doodleV = 0
-    app.a = 9.8
+    app.a = 6
     app.time = 0
     app.seconds = 0
     app.player = [app.doodleY, app.doodleV, app.a, app.time]
@@ -39,6 +36,8 @@ def timerFired(app):
 def mousePressed(app, event):
     app.doodleX = event.x
     app.doodleY = event.y
+    app.doodleV = 0
+    app.time = 0
 
 def drawDoodle(app, canvas):
     canvas.create_image(app.doodleX, app.doodleY, image=ImageTk.PhotoImage(app.doodle))
