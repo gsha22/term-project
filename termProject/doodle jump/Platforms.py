@@ -4,16 +4,12 @@ Spawns the platforms and gives them properties
 from cmu_112_graphics import*
 
 class Platform:
-    def __init__(self, cx, cy):
-        self.cx = cx
-        self.cy = cy
-
     @staticmethod
-    def spawn():
+    def spawn(lx, hx, ly, hy):
         # spawns a bunch at the beginning, then starts spawning them above screen
         import random
-        cx = random.randint(50, 550)
-        cy = random.randint(50, 950)
+        cx = random.randint(lx, hx)
+        cy = random.randint(ly, hy)
         return cx, cy
 
     @staticmethod

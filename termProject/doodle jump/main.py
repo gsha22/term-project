@@ -39,7 +39,8 @@ def appStarted(app):
 
 def timerFired(app):
     
-    if app.time == 0: spawnPlatforms_and_Hitboxes(app)
+    spawnPlatforms_and_Hitboxes(app)
+
     app.time += 1
     if app.time % 1000 == 0:
         app.gameSeconds += 1
@@ -61,7 +62,7 @@ def timerFired(app):
             hitbox[3] += 2
         if hitbox[1] > 1000:
             app.hitboxes.remove(hitbox)
-        
+
         
 def keyPressed(app, event):
     if event.key == "a":
@@ -75,11 +76,18 @@ def drawDoodle(app, canvas):
 
 
 def spawnPlatforms_and_Hitboxes(app):
-    for x in range(20):
-        cx, cy = Platform.spawn()
-        lx, ly, rx, ry = Platform.createHitbox(cx, cy)
-        app.platforms.append([cx, cy])
-        app.hitboxes.append([lx, ly, rx, ry])
+    if app.time == 0:
+        for x in range(20):
+            cx, cy = Platform.spawn(50, 550, 50, 950)
+            lx, ly, rx, ry = Platform.createHitbox(cx, cy)
+            app.platforms.append([cx, cy])
+            app.hitboxes.append([lx, ly, rx, ry])
+    else:
+        if len(app.platforms) < 20:
+            cx, cy = Platform.spawn(50, 550, -75, -25)
+            lx, ly, rx, ry = Platform.createHitbox(cx, cy)
+            app.platforms.append([cx, cy])
+            app.hitboxes.append([lx, ly, rx, ry])
 
 def drawPlatform(app, canvas):
     for platform in app.platforms:
