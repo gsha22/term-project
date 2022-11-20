@@ -9,7 +9,12 @@ class Player:
         self.cy = cy
         self.xv = xv
         self.yv = yv
+        self.bv = -2 
     
-    def xMovements(self, dx):
-        self.cx += dx
+    def xMovements(self, xv, t):
+        self.cx += xv*t
+        self.xv = xv
+    
+    def shoot(self, cx, cy, t):
+        
 
