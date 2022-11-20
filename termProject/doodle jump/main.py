@@ -36,6 +36,7 @@ def appStarted(app):
     
     app.platforms = []
     app.hitboxes = []
+    app.bullets = []
 
     app.timerDelay = 1
 
@@ -82,6 +83,10 @@ def timerFired(app):
     elif app.player.cx > 620:
         app.player.cx = 0
 
+    # update bullet
+    for bullet in app.bullets:
+        bullet[1] -= (2)*app.time
+
         
 def keyPressed(app, event):
     if event.key == "a":
@@ -94,26 +99,28 @@ def keyPressed(app, event):
         app.player.xMovements(2, app.time)
     elif event.key == "Space":
         # app.doodle = app.shooter
-        pass
+        app.bullets.append([app.player.cx, app.player.cy])
+        
         
 
 def drawDoodle(app, canvas):
     canvas.create_image(app.player.cx, app.player.cy, image=ImageTk.PhotoImage(app.doodle))
 
-def drawBullet(app, canvas):
-    canvas.create_circle()
+def drawBullet(app, canvas, cx, cy):
+    r = 5
+    canvas.create_oval(cx-r, cy-r, cx+r, cy+r, fill = 'red')
 
 def spawnPlatforms_and_Hitboxes(app):
     if app.time == 0:
-        while len(app.platforms) < 18:
+        for x in range(18):
             cx, cy = Platform.spawn(50, 550, 100, 900)
             lx, ly, rx, ry = Platform.createHitbox(cx, cy)
-            if Platform.isLegalPlatform(cx, cy, app.platforms):
-                app.platforms.append([cx, cy])
-                app.hitboxes.append([lx, ly, rx, ry])
+            # if Platform.isLegalPlatform(cx, cy, app.platforms):
+            app.platforms.append([cx, cy])
+            app.hitboxes.append([lx, ly, rx, ry])
     
     # keeps spawning platforms above playable area 
-    if len(app.platforms) < 22:
+    if len(app.platforms) < 20:
         cx, cy = Platform.spawn(50, 550, -75, -5)
         lx, ly, rx, ry = Platform.createHitbox(cx, cy)
         if Platform.isLegalPlatform(cx, cy, app.platforms):
@@ -130,6 +137,9 @@ def drawPlatform(app, canvas):
 def redrawAll(app, canvas):
     drawPlatform(app, canvas)
     drawDoodle(app, canvas)
+    for bullet in app.bullets:
+        cx, cy = bullet
+        drawBullet(app, canvas, cx, cy)
     canvas.create_text(300, 100, 
     text= f"""
     xPos = {app.player.cx}, yPos = {app.player.cy} 

@@ -15,6 +15,4 @@ class Player:
         self.cx += xv*t
         self.xv = xv
     
-    def shoot(self, cx, cy, t):
-        
 
