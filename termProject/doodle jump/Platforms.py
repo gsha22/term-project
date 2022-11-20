@@ -12,9 +12,8 @@ class Platform:
     def spawn():
         # spawns a bunch at the beginning, then starts spawning them above screen
         import random
-        # cx = random.randint(50, 550)
-        cx = 300
-        cy = 500
+        cx = random.randint(50, 550)
+        cy = random.randint(50, 950)
         return cx, cy
 
     @staticmethod
@@ -22,5 +21,5 @@ class Platform:
         bottom = cy + 10
         top = cy - 10
         rightSide = cx + 42.5
-        leftSide = cx - 42.5
+        leftSide = cx - 65
         return leftSide, top, rightSide, bottom
