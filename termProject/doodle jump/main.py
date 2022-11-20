@@ -75,8 +75,10 @@ def timerFired(app):
             if app.player.yv < 0:
                 platform[1] += abs(app.player.yv)*app.time  
         
+        # blue platforms don't bounce back yet 
         dx = 1
         platform[0] += dx
+        print(dx)
         if platform[0] > 600 or platform[0] < 0:
             dx *= -1
 
@@ -88,6 +90,7 @@ def timerFired(app):
                 hitbox[1] += abs(app.player.yv)*app.time
                 hitbox[3] += abs(app.player.yv)*app.time
         
+        # blue platforms don't bounce back yet 
         dx = 1
         hitbox[0] += dx
         hitbox[2] += dx
