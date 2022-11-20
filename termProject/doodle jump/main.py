@@ -6,6 +6,7 @@ Main file: Runs all classes and game
 #imports
 from cmu_112_graphics import *
 import math
+import random
 
 from Physics import Gravity
 from Physics import Collisions
@@ -28,6 +29,9 @@ def appStarted(app):
     app.platform = app.loadImage("green_platform.png")
     app.platform = app.scaleImage(app.platform, 2/3)
 
+    app.bluePlatform = app.loadImage("blue_platform.png")
+    app.bluePlatform = app.scaleImage(app.bluePlatform, 2/3)
+
     app.player = Player(300, 400, 0, 0)
 
     app.a = 0.01
@@ -36,6 +40,10 @@ def appStarted(app):
     
     app.platforms = []
     app.hitboxes = []
+
+    app.bluePlatforms = []
+    app.blueHitboxes = []
+
     app.bullets = []
 
     app.timerDelay = 1
@@ -58,7 +66,40 @@ def timerFired(app):
     # collision gives boost in negative velocity 
     if Collisions.isCollision(app.player.cx, app.player.cy, app.hitboxes) and app.player.yv > 0:
         app.player.yv = Gravity.jump()
+    if Collisions.isCollision(app.player.cx, app.player.cy, app.blueHitboxes) and app.player.yv > 0:
+        app.player.yv = Gravity.jump() 
     
+    # makes blue platforms move side to side and up and down
+    for platform in app.bluePlatforms:
+        if app.player.cy < 450:
+            if app.player.yv < 0:
+                platform[1] += abs(app.player.yv)*app.time  
+        
+        dx = 1
+        platform[0] += dx
+        if platform[0] > 600 or platform[0] < 0:
+            dx *= -1
+
+        if platform[1] > 1000:
+            app.bluePlatforms.remove(platform)
+    for hitbox in app.blueHitboxes:
+        if app.player.cy < 450:
+            if app.player.yv < 0:
+                hitbox[1] += abs(app.player.yv)*app.time
+                hitbox[3] += abs(app.player.yv)*app.time
+        
+        dx = 1
+        hitbox[0] += dx
+        hitbox[2] += dx
+
+        if hitbox[0] > 642.5 or hitbox[2] < -65:
+            dx *= -1
+
+        if hitbox[1] > 1000:
+            app.blueHitboxes.remove(hitbox)
+
+
+    # moves the platforms and their hitboxes nicely
     for platform in app.platforms:
         if app.player.cy < 450:
             if app.player.yv < 0:
@@ -86,7 +127,7 @@ def timerFired(app):
     # update bullet
     for bullet in app.bullets:
         bullet[1] -= (2)*app.time
-
+    
         
 def keyPressed(app, event):
     if event.key == "a":
@@ -101,14 +142,15 @@ def keyPressed(app, event):
         # app.doodle = app.shooter
         app.bullets.append([app.player.cx, app.player.cy])
         
-        
 
 def drawDoodle(app, canvas):
     canvas.create_image(app.player.cx, app.player.cy, image=ImageTk.PhotoImage(app.doodle))
 
-def drawBullet(app, canvas, cx, cy):
+def drawBullet(app, canvas):
     r = 5
-    canvas.create_oval(cx-r, cy-r, cx+r, cy+r, fill = 'red')
+    for bullet in app.bullets:
+        cx, cy = bullet
+        canvas.create_oval(cx-r, cy-r, cx+r, cy+r, fill = 'red')
 
 def spawnPlatforms_and_Hitboxes(app):
     if app.time == 0:
@@ -126,6 +168,13 @@ def spawnPlatforms_and_Hitboxes(app):
         if Platform.isLegalPlatform(cx, cy, app.platforms):
             app.platforms.append([cx, cy])
             app.hitboxes.append([lx, ly, rx, ry])
+            
+    if app.gameSeconds % 5 == 0:
+        if len(app.bluePlatforms) < 2:
+            bcx, bcy = Platform.spawn(200, 400, -75, -5)
+            blx, bly, brx, bry = Platform.createHitbox(bcx, bcy)
+            app.bluePlatforms.append([bcx, bcy])
+            app.blueHitboxes.append([blx, bly, brx, bry])
 
 
 def drawPlatform(app, canvas):
@@ -133,13 +182,16 @@ def drawPlatform(app, canvas):
         cx, cy = platform
         canvas.create_image(cx, cy, image=ImageTk.PhotoImage(app.platform))
 
+def drawBluePlatform(app, canvas):
+    for platform in app.bluePlatforms:
+        cx, cy = platform
+        canvas.create_image(cx, cy, image=ImageTk.PhotoImage(app.bluePlatform))
 
 def redrawAll(app, canvas):
     drawPlatform(app, canvas)
-    drawDoodle(app, canvas)
-    for bullet in app.bullets:
-        cx, cy = bullet
-        drawBullet(app, canvas, cx, cy)
+    drawBluePlatform(app, canvas)
+    drawDoodle(app, canvas)    
+    drawBullet(app, canvas)
     canvas.create_text(300, 100, 
     text= f"""
     xPos = {app.player.cx}, yPos = {app.player.cy} 
