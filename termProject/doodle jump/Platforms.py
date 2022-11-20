@@ -17,10 +17,9 @@ class Platform:
         if len(platformList) == 0:
             return True
         for platform in platformList:
-            if abs(platform[0] - cx) > 50 and abs(platform[1] - cy) < 200:
+            if abs(platform[0] - cx) > 100 and abs(platform[1] - cy) < 200:
                 return True
         return False
-
 
     @staticmethod
     def createHitbox(cx, cy):

@@ -11,7 +11,7 @@ class Gravity:
         if v < 2:
             v += a*t
         y += dy
-        return (y, v, a)
+        return (y, v)
     
     @staticmethod
     def jump():
