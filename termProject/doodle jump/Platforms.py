@@ -13,6 +13,16 @@ class Platform:
         return cx, cy
 
     @staticmethod
+    def isLegalPlatform(cx, cy, platformList):
+        if len(platformList) == 0:
+            return True
+        for platform in platformList:
+            if abs(platform[0] - cx) > 50 and abs(platform[1] - cy) < 200:
+                return True
+        return False
+
+
+    @staticmethod
     def createHitbox(cx, cy):
         bottom = cy + 10
         top = cy - 10

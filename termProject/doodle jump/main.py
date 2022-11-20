@@ -22,10 +22,6 @@ def appStarted(app):
     app.platform = app.loadImage("green_platform.png")
     app.platform = app.scaleImage(app.platform, 2/3)
 
-    # app.doodleX = 300
-    # app.doodleY = 400
-    # app.doodleV = 0
-
     app.player = Player(300, 400, 0, 0)
 
     app.a = 0.01
@@ -53,15 +49,25 @@ def timerFired(app):
     
     for platform in app.platforms:
         if app.player.cy < 450:
-            platform[1] += 2
+            if app.player.yv < 0:
+                platform[1] += abs(app.player.yv)*app.time            # abs(app.player.yv)*app.time ---- maybe?? 
         if platform[1] > 1000:
             app.platforms.remove(platform)
     for hitbox in app.hitboxes:
         if app.player.cy < 450:
-            hitbox[1] += 2
-            hitbox[3] += 2
+            if app.player.yv < 0:
+                hitbox[1] += abs(app.player.yv)*app.time
+                hitbox[3] += abs(app.player.yv)*app.time
         if hitbox[1] > 1000:
             app.hitboxes.remove(hitbox)
+    
+    if app.player.cy < 450:
+        app.player.cy = 450
+    
+    if app.player.cx < -20:
+        app.player.cx = 600
+    elif app.player.cx > 620:
+        app.player.cx = 0
 
         
 def keyPressed(app, event):
@@ -78,16 +84,18 @@ def drawDoodle(app, canvas):
 def spawnPlatforms_and_Hitboxes(app):
     if app.time == 0:
         for x in range(20):
-            cx, cy = Platform.spawn(50, 550, 50, 950)
+            cx, cy = Platform.spawn(50, 550, 100, 900)
             lx, ly, rx, ry = Platform.createHitbox(cx, cy)
             app.platforms.append([cx, cy])
             app.hitboxes.append([lx, ly, rx, ry])
     else:
-        if len(app.platforms) < 20:
-            cx, cy = Platform.spawn(50, 550, -75, -25)
+        if len(app.platforms) < 21:
+            cx, cy = Platform.spawn(50, 550, -100, -5)
             lx, ly, rx, ry = Platform.createHitbox(cx, cy)
-            app.platforms.append([cx, cy])
-            app.hitboxes.append([lx, ly, rx, ry])
+            if Platform.isLegalPlatform(cx, cy, app.platforms):
+                app.platforms.append([cx, cy])
+                app.hitboxes.append([lx, ly, rx, ry])
+
 
 def drawPlatform(app, canvas):
     for platform in app.platforms:
