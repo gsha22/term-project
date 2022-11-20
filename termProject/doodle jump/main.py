@@ -78,7 +78,6 @@ def timerFired(app):
         # blue platforms don't bounce back yet 
         dx = 1
         platform[0] += dx
-        print(dx)
         if platform[0] > 600 or platform[0] < 0:
             dx *= -1
 
