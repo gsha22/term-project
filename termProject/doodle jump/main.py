@@ -15,7 +15,6 @@ from Platforms import Platform
 
 from Player import Player
 
-from PIL import Image
 
 def appStarted(app): 
     # SPRITES:
@@ -75,7 +74,7 @@ def timerFired(app):
             if app.player.yv < 0:
                 platform[1] += abs(app.player.yv)*app.time  
         
-        # blue platforms don't bounce back yet 
+        # blue platforms don't bounce back yet idk why
         dx = 1
         platform[0] += dx
         if platform[0] > 600 or platform[0] < 0:
@@ -129,6 +128,8 @@ def timerFired(app):
     # update bullet
     for bullet in app.bullets:
         bullet[1] -= (2)*app.time
+        if bullet[1] < 0:
+            app.bullets.remove(bullet)
     
         
 def keyPressed(app, event):
@@ -156,7 +157,7 @@ def drawBullet(app, canvas):
 
 def spawnPlatforms_and_Hitboxes(app):
     if app.time == 0:
-        for x in range(18):
+        for x in range(12):
             cx, cy = Platform.spawn(50, 550, 100, 900)
             lx, ly, rx, ry = Platform.createHitbox(cx, cy)
             # if Platform.isLegalPlatform(cx, cy, app.platforms):
@@ -164,7 +165,7 @@ def spawnPlatforms_and_Hitboxes(app):
             app.hitboxes.append([lx, ly, rx, ry])
     
     # keeps spawning platforms above playable area 
-    if len(app.platforms) < 20:
+    if len(app.platforms) < 15:
         cx, cy = Platform.spawn(50, 550, -75, -5)
         lx, ly, rx, ry = Platform.createHitbox(cx, cy)
         if Platform.isLegalPlatform(cx, cy, app.platforms):
