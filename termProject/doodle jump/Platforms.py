@@ -12,13 +12,13 @@ class Platform:
         if len(platformList) == numPlatforms:
             return platformList
         else:
-            maxY = 0
+            highestY = 1000
             for platform in platformList:
-                if platform[1] < maxY:
-                    maxY = platform[1]
+                if platform[1] < highestY:
+                    highestY = platform[1]
             lx, hx = 100, 500
-            ly = maxY - 20
-            hy = maxY + max_y_distance
+            ly = highestY - 20
+            hy = highestY - max_y_distance
             cx = random.randint(lx, hx)
             cy = random.randint(ly, hy)
             platformList.append([cx, cy])
@@ -37,11 +37,11 @@ class Platform:
     def isLegalPlatform(cx, cy, platformList):
         if len(platformList) == 0:
             return True
-        maxY = 0
+        highestY = 1000
         for platform in platformList:
-            if platform[1] < maxY:
-                maxY = platform[1]
-        if (0 < cy - maxY < 150) and (abs(cx - platform[0]) > 100):
+            if platform[1] < highestY:
+                highestY = platform[1]
+        if (0 < abs(cy - highestY) < 150) and (abs(cx - platform[0]) > 100):
             return True
         else:
             return False

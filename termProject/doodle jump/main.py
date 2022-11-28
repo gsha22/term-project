@@ -160,7 +160,7 @@ def spawnPlatforms_and_Hitboxes(app):
         # lx, ly, rx, ry, = Platform.createHitbox(300, 900)
         # app.hitboxes.append([lx, ly, rx, ry])
         numPlatforms = 12
-        max_y_distance = 150
+        max_y_distance = 80
         L = [[300, 900]]
         startingMap = Platform.createInitialMap(L, numPlatforms, max_y_distance)
         for platform in startingMap:
