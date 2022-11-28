@@ -4,8 +4,7 @@ Game Physics Classes
     = 1/2(g)(t)^2 + vt + h
 '''
 
-class Gravity:
-    @staticmethod
+class Gravity:   
     def falling(y, v, a, t):
         dy = v*t + (1/2)*a*t**2
         if v < 2:
@@ -13,12 +12,10 @@ class Gravity:
         y += dy
         return (y, v)
     
-    @staticmethod
     def jump():
         return -2
 
 class Collisions:
-    @staticmethod
     def isCollision(x, y, platformHitboxes):
         y = y + 30
         for platform in platformHitboxes:
