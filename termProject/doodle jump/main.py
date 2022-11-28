@@ -26,8 +26,8 @@ def appStarted(app):
 
     app.platform = app.loadImage("green_platform.png")
     app.platform = app.scaleImage(app.platform, 2/3)
-    app.num_green_platforms = 18
-    app.max_green_y_distance = 200
+    app.num_green_platforms = 15
+    app.max_green_y_distance = 150
 
     app.bluePlatform = app.loadImage("blue_platform.png")
     app.bluePlatform = app.scaleImage(app.bluePlatform, 2/3)
@@ -162,7 +162,7 @@ def spawnPlatforms_and_Hitboxes(app):
         # lx, ly, rx, ry, = Platform.createHitbox(300, 900)
         # app.hitboxes.append([lx, ly, rx, ry])
         L = [[300, 900]]
-        initialPlatforms = 15
+        initialPlatforms = 20
         initialMaxDistance = 100
         startingMap = Platform.createInitialMap(L, initialPlatforms, initialMaxDistance)
         for platform in startingMap:
@@ -171,11 +171,12 @@ def spawnPlatforms_and_Hitboxes(app):
             app.hitboxes.append([lx, ly, rx, ry])
 
     # keeps spawning platforms above playable area 
-    if len(app.platforms) < app.num_green_platforms:
-        cx, cy = Platform.basicSpawn(25, 550, -205, -5)
-        lx, ly, rx, ry = Platform.createHitbox(cx, cy)
-        if Platform.isLegalPlatform(cx, cy, app.platforms):
-            app.platforms.append([cx, cy])
+    if Platform.needsMorePlatforms(app.platforms):
+        L = []
+        nextLevels = Platform.infiniteSpawner(L, app.num_green_platforms, app.max_green_y_distance)
+        for platform in nextLevels:
+            app.platforms.append(platform)
+            lx, ly, rx, ry = Platform.createHitbox(platform[0], platform[1])
             app.hitboxes.append([lx, ly, rx, ry])
             
     if app.gameSeconds % 5 == 0:

@@ -51,11 +51,16 @@ class Platform:
         for platform in platformList:
             if platform[1] < highestY:
                 highestY = platform[1]
-        if (abs(cy - highestY) < 150) and (abs(cx - platform[0]) > 100):
+        if (50 < abs(cy - highestY) < 150) and (abs(cx - platform[0]) > 100):
             return True
         else:
             return False
 
+    def needsMorePlatforms(platformList):
+        for platform in platformList:
+            if platform[1] < 0:
+                return False
+        return True
 
     def createHitbox(cx, cy):
         bottom = cy + 10
