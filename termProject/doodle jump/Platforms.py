@@ -2,12 +2,33 @@
 Spawns the platforms and gives them properties
 '''
 from cmu_112_graphics import*
+import random
+
 
 class Platform:
     @staticmethod
-    def spawn(lx, hx, ly, hy):
+    def createInitialMap(platformList, numPlatforms, max_y_distance):
+        print(platformList)
+        if len(platformList) == numPlatforms:
+            return platformList
+        else:
+            maxY = 0
+            for platform in platformList:
+                if platform[1] < maxY:
+                    maxY = platform[1]
+            lx, hx = 100, 500
+            ly = maxY - 20
+            hy = maxY + max_y_distance
+            cx = random.randint(lx, hx)
+            cy = random.randint(ly, hy)
+            platformList.append([cx, cy])
+            return Platform.createInitialMap(platformList, numPlatforms, max_y_distance)
+
+
+
+    @staticmethod
+    def spawn(lx, hx, ly, hy): 
         # spawns a bunch at the beginning, then starts spawning them above screen
-        import random
         cx = random.randint(lx, hx)
         cy = random.randint(ly, hy)
         return cx, cy
@@ -16,10 +37,14 @@ class Platform:
     def isLegalPlatform(cx, cy, platformList):
         if len(platformList) == 0:
             return True
+        maxY = 0
         for platform in platformList:
-            if abs(platform[0] - cx) > 100 and abs(platform[1] - cy) < 200:
-                return True
-        return False
+            if platform[1] < maxY:
+                maxY = platform[1]
+        if (0 < cy - maxY < 150) and (abs(cx - platform[0]) > 100):
+            return True
+        else:
+            return False
 
     @staticmethod
     def createHitbox(cx, cy):

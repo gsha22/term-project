@@ -1,6 +1,5 @@
 ''' 
 Main file: Runs all classes and game
-
 '''
 
 #imports
@@ -157,13 +156,20 @@ def drawBullet(app, canvas):
 
 def spawnPlatforms_and_Hitboxes(app):
     if app.time == 0:
-        for x in range(12):
-            cx, cy = Platform.spawn(50, 550, 100, 900)
-            lx, ly, rx, ry = Platform.createHitbox(cx, cy)
-            # if Platform.isLegalPlatform(cx, cy, app.platforms):
-            app.platforms.append([cx, cy])
+        # app.platforms.append([300, 900])
+        # lx, ly, rx, ry, = Platform.createHitbox(300, 900)
+        # app.hitboxes.append([lx, ly, rx, ry])
+        numPlatforms = 12
+        max_y_distance = 150
+        L = [[300, 900]]
+        startingMap = Platform.createInitialMap(L, numPlatforms, max_y_distance)
+        for platform in startingMap:
+            app.platforms.append(platform)
+            lx, ly, rx, ry = Platform.createHitbox(platform[0], platform[1])
             app.hitboxes.append([lx, ly, rx, ry])
-    
+
+
+
     # keeps spawning platforms above playable area 
     if len(app.platforms) < 15:
         cx, cy = Platform.spawn(50, 550, -75, -5)
