@@ -91,22 +91,25 @@ def timerFired(app):
         app.time += 0.5
         if app.time % 1000 == 0:
             app.gameSeconds += 1
-        if app.time > 8:
-            app.time = 8
+        if app.time > 8.1:
+            app.time = 8.1
         # Gravity is always affecting the character 
         (app.startingDoodle.cy, app.startingDoodle.yv) = Gravity.falling(app.startingDoodle.cy, app.startingDoodle.yv, app.a, app.time)
 
         # collision gives boost in negative velocity 
-        if Collisions.isCollision(app.startingDoodle.cx, app.startingDoodle.cy, app.hitboxes) and app.startingDoodle.yv > 0:
+        if (Collisions.isCollision(app.startingDoodle.cx, app.startingDoodle.cy,
+            app.hitboxes) and app.startingDoodle.yv > 0 ):
             app.startingDoodle.yv = Gravity.jump()
-        if Collisions.isCollision(app.startingDoodle.cx, app.startingDoodle.cy, app.blueHitboxes) and app.startingDoodle.yv > 0:
-            app.startingDoodle.yv = Gravity.jump() 
+        if (Collisions.isCollision(app.startingDoodle.cx, app.startingDoodle.cy, 
+            app.blueHitboxes) and app.startingDoodle.yv > 0 ):
+            app.startingDoodle.yv = Gravity.jump()
 
 
     if app.playingGame:
-        
-        app.platforms.pop()
-        app.hitboxes.pop()
+        if app.time == 8.1:
+            app.time = 0
+            app.platforms.pop()
+            app.hitboxes.pop()
         # Gravity is always affecting the character 
         (app.player.cy, app.player.yv) = Gravity.falling(app.player.cy, app.player.yv, app.a, app.time)
 
@@ -283,17 +286,17 @@ def drawPbIsPressed(app, canvas):
         canvas.create_image(app.playButtonButton.cx, app.playButtonButton.cy, image=ImageTk.PhotoImage(app.pressedPB))
 
 def mousePressed(app, event):
-    app.mouseX = event.x
-    app.mouseY = event.y
     lx, rx, ty, by = app.playButtonButton.buttonHitbox()
-    if lx < app.mouseX < rx and ty < event.y < by:
+    if lx < event.x < rx and ty < event.y < by:
         app.pbIsPressed = True
 
 def mouseReleased(app, event):
     lx, rx, ty, by = app.playButtonButton.buttonHitbox()
-    if lx < app.mouseX < rx and ty < event.y < by:
+    if lx < event.x < rx and ty < event.y < by:
         app.startingMenu = False
         app.playingGame = True
+    app.pbIsPressed = False
+        
 
 
 def redrawAll(app, canvas):
