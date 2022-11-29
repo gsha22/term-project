@@ -13,6 +13,7 @@ from Physics import Collisions
 from Platforms import Platform
 
 from Player import Player
+from Button import CircleButton
 
 
 def appStarted(app): 
@@ -66,6 +67,12 @@ def appStarted(app):
     app.playButton = app.loadImage("playButton.png")
     app.playButton = app.scaleImage(app.playButton, 2/3)
 
+    app.pressedPB = app.loadImage("playButton_on.png")
+    app.pressedPB = app.scaleImage(app.pressedPB, 2/3)
+
+    app.playButtonButton = CircleButton(400, 500)
+    app.pbIsPressed = False
+
     #currently playing the game
     app.playingGame = False
 
@@ -97,9 +104,9 @@ def timerFired(app):
 
 
     if app.playingGame:
-
-        # app.platforms.pop()
-        # app.hitboxes.pop()
+        
+        app.platforms.pop()
+        app.hitboxes.pop()
         # Gravity is always affecting the character 
         (app.player.cy, app.player.yv) = Gravity.falling(app.player.cy, app.player.yv, app.a, app.time)
 
@@ -269,11 +276,24 @@ def drawTitle(app, canvas):
     canvas.create_image(250, 300, image=ImageTk.PhotoImage(app.title))
 
 def drawPlayButton(app, canvas):
-    canvas.create_image(400, 500, image=ImageTk.PhotoImage(app.playButton))
+    canvas.create_image(app.playButtonButton.cx, app.playButtonButton.cy, image=ImageTk.PhotoImage(app.playButton))
+
+def drawPbIsPressed(app, canvas):
+    if app.pbIsPressed == True:
+        canvas.create_image(app.playButtonButton.cx, app.playButtonButton.cy, image=ImageTk.PhotoImage(app.pressedPB))
 
 def mousePressed(app, event):
     app.mouseX = event.x
     app.mouseY = event.y
+    lx, rx, ty, by = app.playButtonButton.buttonHitbox()
+    if lx < app.mouseX < rx and ty < event.y < by:
+        app.pbIsPressed = True
+
+def mouseReleased(app, event):
+    lx, rx, ty, by = app.playButtonButton.buttonHitbox()
+    if lx < app.mouseX < rx and ty < event.y < by:
+        app.startingMenu = False
+        app.playingGame = True
 
 
 def redrawAll(app, canvas):
@@ -284,7 +304,7 @@ def redrawAll(app, canvas):
         drawPlatform(app, canvas)
         drawTitle(app, canvas)
         drawPlayButton(app, canvas)
-
+        drawPbIsPressed(app, canvas)
 
     if app.playingGame:
         drawPlatform(app, canvas)
