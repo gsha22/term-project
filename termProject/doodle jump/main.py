@@ -59,6 +59,10 @@ def appStarted(app):
     app.startingMenu = True
     app.startingDoodle = Player(150, 600, 0, 0)
 
+    app.title = app.loadImage("doodle-jump.png")
+    app.playButton = app.loadImage("playButton.png")
+    app.playButton = app.scaleImage(app.playButton, 2/3)
+
     #currently playing the game
     app.playingGame = False
 
@@ -247,6 +251,8 @@ def drawBluePlatform(app, canvas):
         cx, cy = platform
         canvas.create_image(cx, cy, image=ImageTk.PhotoImage(app.bluePlatform))
 
+
+
 # For starting menu 
 def drawStartingDoodle(app, canvas):
     canvas.create_image(app.startingDoodle.cx, app.startingDoodle.cy, image=ImageTk.PhotoImage(app.doodle))
@@ -256,12 +262,22 @@ def createOneGreenPlatform(app):
     lx, ly, rx, ry = Platform.createHitbox(150, 800)
     app.hitboxes.append([lx, ly, rx, ry])
 
+def drawTitle(app, canvas):
+    canvas.create_image(250, 300, image=ImageTk.PhotoImage(app.title))
+
+def drawPlayButton(app, canvas):
+    canvas.create_image(400, 500, image=ImageTk.PhotoImage(app.playButton))
+
+
 def redrawAll(app, canvas):
     drawBackground(app, canvas)
 
     if app.startingMenu:
         drawStartingDoodle(app, canvas)
         drawPlatform(app, canvas)
+        drawTitle(app, canvas)
+        drawPlayButton(app, canvas)
+
 
     if app.playingGame:
         drawPlatform(app, canvas)
