@@ -55,6 +55,9 @@ def appStarted(app):
 
     app.score = 0
 
+    app.mouseX = 0
+    app.mouseY = 0
+
     # Starting Menu
     app.startingMenu = True
     app.startingDoodle = Player(150, 600, 0, 0)
@@ -267,6 +270,10 @@ def drawTitle(app, canvas):
 
 def drawPlayButton(app, canvas):
     canvas.create_image(400, 500, image=ImageTk.PhotoImage(app.playButton))
+
+def mousePressed(app, event):
+    app.mouseX = event.x
+    app.mouseY = event.y
 
 
 def redrawAll(app, canvas):
