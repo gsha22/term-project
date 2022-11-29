@@ -138,50 +138,8 @@ def timerFired(app):
         if app.time > 8:
             app.time = 8
 
-        
-        # makes blue platforms move side to side and up and down
-        for platform in app.bluePlatforms:
-            if app.player.cy < 450:
-                if app.player.yv < 0:
-                    platform[1] += abs(app.player.yv)*app.time  
-            
-            # blue platforms don't bounce back yet idk why
-            
-            platform[0] += app.bluedx
-            if platform[0] > 557.5 or platform[0] < 65:
-                app.bluedx *= -1
-
-            if platform[1] > 1000:
-                app.bluePlatforms.remove(platform)
-        for hitbox in app.blueHitboxes:
-            if app.player.cy < 450:
-                if app.player.yv < 0:
-                    hitbox[1] += abs(app.player.yv)*app.time
-                    hitbox[3] += abs(app.player.yv)*app.time
-            
-            hitbox[0] += app.bluedx
-            hitbox[2] += app.bluedx
-
-            if hitbox[0] > 642.5 or hitbox[2] < -65:
-                app.bluedx *= -1
-
-            if hitbox[1] > 1000:
-                app.blueHitboxes.remove(hitbox)
-
-        # moves the platforms and their hitboxes nicely
-        for platform in app.platforms:
-            if app.player.cy < 450:
-                if app.player.yv < 0:
-                    platform[1] += abs(app.player.yv)*app.time            
-            if platform[1] > 1000:
-                app.platforms.remove(platform)
-        for hitbox in app.hitboxes:
-            if app.player.cy < 450:
-                if app.player.yv < 0:
-                    hitbox[1] += abs(app.player.yv)*app.time
-                    hitbox[3] += abs(app.player.yv)*app.time
-            if hitbox[1] > 1000:
-                app.hitboxes.remove(hitbox)
+        moveBluePlatforms(app)
+        moveGreenPlatforms(app)
 
         # so it doesn't seem like he jumps 2x the height
         if app.player.cy < 450:
@@ -195,7 +153,7 @@ def timerFired(app):
 
         # update bullet
         for bullet in app.bullets:
-            bullet[1] -= (2)*app.time
+            bullet[1] -= (4)*app.time
             if bullet[1] < 0:
                 app.bullets.remove(bullet)
     
@@ -210,9 +168,9 @@ def keyPressed(app, event):
             if app.player.xv <= 0:
                 app.doodle = app.doodle.transpose(Image.FLIP_LEFT_RIGHT)
             app.player.xMovements(4, app.time)
-        elif event.key == "Space":
-            # app.doodle = app.shooter
-            app.bullets.append([app.player.cx, app.player.cy])
+        # elif event.key == "Space":
+        #     app.doodle = app.shooter
+        #     app.bullets.append([app.player.cx, app.player.cy])
         
 
 def drawDoodle(app, canvas):
@@ -259,11 +217,50 @@ def drawPlatform(app, canvas):
         cx, cy = platform
         canvas.create_image(cx, cy, image=ImageTk.PhotoImage(app.platform))
 
+def moveGreenPlatforms(app):
+    # moves the platforms and their hitboxes nicely
+    for platform in app.platforms:
+        if app.player.cy < 450:
+            if app.player.yv < 0:
+                platform[1] += abs(app.player.yv)*app.time            
+        if platform[1] > 1000:
+            app.platforms.remove(platform)
+    for hitbox in app.hitboxes:
+        if app.player.cy < 450:
+            if app.player.yv < 0:
+                hitbox[1] += abs(app.player.yv)*app.time
+                hitbox[3] += abs(app.player.yv)*app.time
+        if hitbox[1] > 1000:
+            app.hitboxes.remove(hitbox)
+
 def drawBluePlatform(app, canvas):
     for platform in app.bluePlatforms:
         cx, cy = platform
         canvas.create_image(cx, cy, image=ImageTk.PhotoImage(app.bluePlatform))
 
+def moveBluePlatforms(app):
+    # makes blue platforms move side to side and up and down
+    for platform in app.bluePlatforms:
+        if app.player.cy < 450:
+            if app.player.yv < 0:
+                platform[1] += abs(app.player.yv)*app.time  
+        platform[0] += app.bluedx
+        if platform[0] > 557.5 or platform[0] < 65:
+            app.bluedx *= -1
+        if platform[1] > 1000:
+            app.bluePlatforms.remove(platform)
+    # vertical part 
+    for hitbox in app.blueHitboxes:
+        if app.player.cy < 450:
+            if app.player.yv < 0:
+                hitbox[1] += abs(app.player.yv)*app.time
+                hitbox[3] += abs(app.player.yv)*app.time    
+        hitbox[0] += app.bluedx
+        hitbox[2] += app.bluedx
+        if hitbox[0] > 642.5 or hitbox[2] < -65:
+            app.bluedx *= -1
+        if hitbox[1] > 1000:
+            app.blueHitboxes.remove(hitbox)
 
 
 # For starting menu 
