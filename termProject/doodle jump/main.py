@@ -26,11 +26,16 @@ def appStarted(app):
 
     app.platform = app.loadImage("green_platform.png")
     app.platform = app.scaleImage(app.platform, 2/3)
-    app.num_green_platforms = 15
-    app.max_green_y_distance = 150
+    app.num_green_platforms = 5
+    app.max_green_y_distance = 100
 
     app.bluePlatform = app.loadImage("blue_platform.png")
     app.bluePlatform = app.scaleImage(app.bluePlatform, 2/3)
+    app.bluedx = 3
+
+    #BACKGROUND
+    app.background = app.loadImage("background.png")
+    app.background = app.scaleImage(app.background, 4/3)
 
     app.player = Player(300, 400, 0, 0)
 
@@ -48,9 +53,28 @@ def appStarted(app):
 
     app.timerDelay = 1
 
+    app.score = 0
+
+    # Starting Menu
+    app.startingMenu = True
+
+    # Game Over
+    app.gameOver = False
+
     
 
 def timerFired(app):
+
+    # difficulty
+    if 1500 < app.score < 2000 and app.max_green_y_distance < 150:
+        app.max_green_y_distance += 10
+    
+    if 2500 < app.score and app.max_green_y_distance < 200:
+        app.max_green_y_distance += 1
+
+
+    if app.player.yv < 0:
+        app.score += round(abs(app.player.yv)*app.time)
     
     spawnPlatforms_and_Hitboxes(app)
 
@@ -76,10 +100,10 @@ def timerFired(app):
                 platform[1] += abs(app.player.yv)*app.time  
         
         # blue platforms don't bounce back yet idk why
-        dx = 1
-        platform[0] += dx
-        if platform[0] > 600 or platform[0] < 0:
-            dx *= -1
+        
+        platform[0] += app.bluedx
+        if platform[0] > 557.5 or platform[0] < 65:
+            app.bluedx *= -1
 
         if platform[1] > 1000:
             app.bluePlatforms.remove(platform)
@@ -89,13 +113,11 @@ def timerFired(app):
                 hitbox[1] += abs(app.player.yv)*app.time
                 hitbox[3] += abs(app.player.yv)*app.time
         
-        # blue platforms don't bounce back yet 
-        dx = 1
-        hitbox[0] += dx
-        hitbox[2] += dx
+        hitbox[0] += app.bluedx
+        hitbox[2] += app.bluedx
 
         if hitbox[0] > 642.5 or hitbox[2] < -65:
-            dx *= -1
+            app.bluedx *= -1
 
         if hitbox[1] > 1000:
             app.blueHitboxes.remove(hitbox)
@@ -158,11 +180,8 @@ def drawBullet(app, canvas):
 
 def spawnPlatforms_and_Hitboxes(app):
     if app.time == 0:
-        # app.platforms.append([300, 900])
-        # lx, ly, rx, ry, = Platform.createHitbox(300, 900)
-        # app.hitboxes.append([lx, ly, rx, ry])
         L = [[300, 900]]
-        initialPlatforms = 20
+        initialPlatforms = 15
         initialMaxDistance = 100
         startingMap = Platform.createInitialMap(L, initialPlatforms, initialMaxDistance)
         for platform in startingMap:
@@ -180,12 +199,14 @@ def spawnPlatforms_and_Hitboxes(app):
             app.hitboxes.append([lx, ly, rx, ry])
             
     if app.gameSeconds % 5 == 0:
-        if len(app.bluePlatforms) < 2:
+        if len(app.bluePlatforms) < 1:
             bcx, bcy = Platform.basicSpawn(200, 400, -75, -5)
             blx, bly, brx, bry = Platform.createHitbox(bcx, bcy)
             app.bluePlatforms.append([bcx, bcy])
             app.blueHitboxes.append([blx, bly, brx, bry])
 
+def drawBackground(app, canvas):
+    canvas.create_image(300, 500, image=ImageTk.PhotoImage(app.background))
 
 def drawPlatform(app, canvas):
     for platform in app.platforms:
@@ -198,14 +219,16 @@ def drawBluePlatform(app, canvas):
         canvas.create_image(cx, cy, image=ImageTk.PhotoImage(app.bluePlatform))
 
 def redrawAll(app, canvas):
+    drawBackground(app, canvas)
     drawPlatform(app, canvas)
     drawBluePlatform(app, canvas)
     drawDoodle(app, canvas)    
     drawBullet(app, canvas)
-    canvas.create_text(300, 100, 
-    text= f"""
-    xPos = {app.player.cx}, yPos = {app.player.cy} 
-        yv = {app.player.yv}, xv = {app.player.xv}""")
+    canvas.create_rectangle(0, 0, 600, 50, fill = "burlywood1", outline = "burlywood1")
+    canvas.create_text(60, 25, 
+    text= f"{app.score}", font = ("Comic Sans MS", 18))
+
+
 
 runApp(width = 600, height = 1000)
 
