@@ -1,7 +1,7 @@
 '''
 Game Physics Classes
-
-    = 1/2(g)(t)^2 + vt + h
+    Gravity and Collisions
+    also keeping track of total height 
 '''
 
 class Gravity:   
