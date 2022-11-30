@@ -7,3 +7,4 @@ Citations:
 I got the pictures/sprites from online:
 https://www.spriters-resource.com/mobile/doodlejump/
 https://www.vg-resource.com/thread-21558.html
+https://www.pinterest.com/pin/44191640069279768/

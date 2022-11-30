@@ -1,6 +1,6 @@
-                                  TP1
+                              
                             Game: 112 Jump
-
+TP1:
 Project Description:
     The game I will be creating will be called "112 Jump." It is an infinite 
 vertical jumper that is very similar to the famous mobile game "Doodle Jump."
@@ -200,3 +200,17 @@ TP1 Meeting:
     I scheduled a meeting with Sunny for Monday 11/21/2022. 
 
 
+TP2 Updates:
+Design: 
+    I reached my idea of MVP, and it was more difficult to get monsters spawning 
+than I initially thought, so that is only partially done. 
+
+Time Sheet:
+    I spent more time on the more confusing parts of the project in between TP1 
+and TP2. I managed to get smooth x-direction movement, fixed blue platform 
+movement, and created platform spawning that makes it more difficult as you get 
+higher then caps off at a certain point. However, even though I didn't finish 
+the monster spawning, I made a working home screen and game over screen. 
+
+TP2 Meeting:
+    I scheduled a meeting with Sunny on Thurs 12/1/22 at 1:45-2:00 pm
