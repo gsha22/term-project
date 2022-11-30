@@ -65,6 +65,8 @@ def appStarted(app):
     app.mouseX = 0
     app.mouseY = 0
 
+    app.dazed = False
+
     # Starting Menu
     app.startingMenu = True
     app.startingDoodle = Player(150, 600, 0, 0)
@@ -134,11 +136,13 @@ def timerFired(app):
         (app.player.cx) += app.player.xv*app.time
 
         if app.gameOver != True:
-            # collision gives boost in negative velocity 
-            if Collisions.isCollision(app.player.cx, app.player.cy, app.hitboxes) and app.player.yv > 0:
-                app.player.yv = Gravity.jump()
-            if Collisions.isCollision(app.player.cx, app.player.cy, app.blueHitboxes) and app.player.yv > 0:
-                app.player.yv = Gravity.jump() 
+
+            if app.dazed != True:
+                # collision gives boost in negative velocity 
+                if Collisions.isCollision(app.player.cx, app.player.cy, app.hitboxes) and app.player.yv > 0:
+                    app.player.yv = Gravity.jump()
+                if Collisions.isCollision(app.player.cx, app.player.cy, app.blueHitboxes) and app.player.yv > 0:
+                    app.player.yv = Gravity.jump() 
 
             # difficulty
             if 1500 < app.score < 2000 and app.max_green_y_distance < 150:
@@ -172,7 +176,7 @@ def timerFired(app):
                         monster.cy += abs(app.player.yv)*app.time
                 d = math.sqrt((app.player.cx-monster.cx)**2 + (app.player.cy-monster.cy)**2)
                 if d <= (40 + 40):   # approximations Right now 
-                    print("True")
+                    app.dazed = True
 
             # so it doesn't seem like he jumps 2x the height
             if app.player.cy < 450:
@@ -205,13 +209,13 @@ def timerFired(app):
 
 
 def keyPressed(app, event):
-    if app.playingGame and app.gameOver != True: 
+    if app.playingGame and app.gameOver != True and app.dazed != True: 
         if event.key == "a":
-            app.player.xVel(-2)
+            app.player.xVel(-1.5)
             if app.player.xv < 0:
                 app.doodle = app.normaldoodle
         elif event.key == "d":
-            app.player.xVel(2)
+            app.player.xVel(1.5)
             if app.player.xv > 0:
                 app.doodle = app.rightDoodle
             
