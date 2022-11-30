@@ -78,8 +78,10 @@ def appStarted(app):
 
     # Game Over
     app.gameOver = False
+    app.gameOverX = 300
+    app.gameOverY = 1550
+    app.stopGravity = False
 
-    
 
 def timerFired(app):
 
@@ -105,7 +107,7 @@ def timerFired(app):
             app.startingDoodle.yv = Gravity.jump()
 
 
-    if app.playingGame:
+    if app.playingGame and app.stopGravity == False:
         if app.time == 8.1:
             app.time = 0
             app.platforms.pop()
@@ -113,53 +115,69 @@ def timerFired(app):
         # Gravity is always affecting the character 
         (app.player.cy, app.player.yv) = Gravity.falling(app.player.cy, app.player.yv, app.a, app.time)
 
-        # collision gives boost in negative velocity 
-        if Collisions.isCollision(app.player.cx, app.player.cy, app.hitboxes) and app.player.yv > 0:
-            app.player.yv = Gravity.jump()
-        if Collisions.isCollision(app.player.cx, app.player.cy, app.blueHitboxes) and app.player.yv > 0:
-            app.player.yv = Gravity.jump() 
+        if app.gameOver != True:
+            # collision gives boost in negative velocity 
+            if Collisions.isCollision(app.player.cx, app.player.cy, app.hitboxes) and app.player.yv > 0:
+                app.player.yv = Gravity.jump()
+            if Collisions.isCollision(app.player.cx, app.player.cy, app.blueHitboxes) and app.player.yv > 0:
+                app.player.yv = Gravity.jump() 
 
-        # difficulty
-        if 1500 < app.score < 2000 and app.max_green_y_distance < 150:
-            app.max_green_y_distance += 10
+            # difficulty
+            if 1500 < app.score < 2000 and app.max_green_y_distance < 150:
+                app.max_green_y_distance += 10
+            
+            if 2500 < app.score and app.max_green_y_distance < 200:
+                app.max_green_y_distance += 1
+
+
+            if app.player.yv < 0:
+                app.score += round(abs(app.player.yv)*app.time)
+            
+            spawnPlatforms_and_Hitboxes(app)
+
+            app.time += 1
+            if app.time % 1000 == 0:
+                app.gameSeconds += 1
+            if app.time > 8:
+                app.time = 8
+
+            moveBluePlatforms(app)
+            moveGreenPlatforms(app)
+
+            # so it doesn't seem like he jumps 2x the height
+            if app.player.cy < 450:
+                app.player.cy = 450
+            
+            # wrap around 
+            if app.player.cx < -20:
+                app.player.cx = 600
+            elif app.player.cx > 620:
+                app.player.cx = 0
+
+            # update bullet
+            for bullet in app.bullets:
+                bullet[1] -= (4)*app.time
+                if bullet[1] < 0:
+                    app.bullets.remove(bullet)
+    
+            if app.player.cy > 1000:
+                app.gameOver = True
         
-        if 2500 < app.score and app.max_green_y_distance < 200:
-            app.max_green_y_distance += 1
+        if app.gameOver:
+            if app.player.cy > 1000 and len(app.platforms) > 0:
+                app.player.yv = -4
+            moveGreenPlatformsUp(app)
+            if app.gameOverY > 400:
+                moveGameOverScreenUp(app)
+            if app.player.cy > 1200 and len(app.platforms) == 0:
+                app.stopGravity = True
+                app.playingGame = False
 
-
-        if app.player.yv < 0:
-            app.score += round(abs(app.player.yv)*app.time)
-        
-        spawnPlatforms_and_Hitboxes(app)
-
-        app.time += 1
-        if app.time % 1000 == 0:
-            app.gameSeconds += 1
-        if app.time > 8:
-            app.time = 8
-
-        moveBluePlatforms(app)
-        moveGreenPlatforms(app)
-
-        # so it doesn't seem like he jumps 2x the height
-        if app.player.cy < 450:
-            app.player.cy = 450
-        
-        # wrap around 
-        if app.player.cx < -20:
-            app.player.cx = 600
-        elif app.player.cx > 620:
-            app.player.cx = 0
-
-        # update bullet
-        for bullet in app.bullets:
-            bullet[1] -= (4)*app.time
-            if bullet[1] < 0:
-                app.bullets.remove(bullet)
+    
     
         
 def keyPressed(app, event):
-    if app.playingGame: 
+    if app.playingGame and app.gameOver != True: 
         if event.key == "a":
             if app.player.xv > 0:
                 app.doodle = app.doodle.transpose(Image.FLIP_LEFT_RIGHT)
@@ -233,6 +251,7 @@ def moveGreenPlatforms(app):
         if hitbox[1] > 1000:
             app.hitboxes.remove(hitbox)
 
+
 def drawBluePlatform(app, canvas):
     for platform in app.bluePlatforms:
         cx, cy = platform
@@ -265,7 +284,8 @@ def moveBluePlatforms(app):
 
 # For starting menu 
 def drawStartingDoodle(app, canvas):
-    canvas.create_image(app.startingDoodle.cx, app.startingDoodle.cy, image=ImageTk.PhotoImage(app.doodle))
+    canvas.create_image(app.startingDoodle.cx, app.startingDoodle.cy, 
+                                image=ImageTk.PhotoImage(app.doodle))
 
 def createOneGreenPlatform(app):
     app.platforms.append([160, 800])
@@ -276,11 +296,37 @@ def drawTitle(app, canvas):
     canvas.create_image(250, 300, image=ImageTk.PhotoImage(app.title))
 
 def drawPlayButton(app, canvas):
-    canvas.create_image(app.playButtonButton.cx, app.playButtonButton.cy, image=ImageTk.PhotoImage(app.playButton))
+    canvas.create_image(app.playButtonButton.cx, app.playButtonButton.cy, 
+                                image=ImageTk.PhotoImage(app.playButton))
 
 def drawPbIsPressed(app, canvas):
     if app.pbIsPressed == True:
-        canvas.create_image(app.playButtonButton.cx, app.playButtonButton.cy, image=ImageTk.PhotoImage(app.pressedPB))
+        canvas.create_image(app.playButtonButton.cx, app.playButtonButton.cy, 
+                                    image=ImageTk.PhotoImage(app.pressedPB))
+
+
+# for game over screen 
+def drawGameOverScreen(app, canvas):
+    canvas.create_text(app.gameOverX, app.gameOverY-50, 
+                    text = "Game Over!", font = ("Comic Sans MS", 30))
+    canvas.create_text(app.gameOverX, app.gameOverY+50, 
+                text= f"Your Score: {app.score}", font = ("Comic Sans MS", 20))
+    
+
+def moveGreenPlatformsUp(app):
+    for platform in app.platforms:
+        platform[1] -= abs(app.player.yv)*app.time            
+        if platform[1] < 0:
+            app.platforms.remove(platform)
+    for hitbox in app.hitboxes:
+        hitbox[1] -= abs(app.player.yv)*app.time
+        hitbox[3] -= abs(app.player.yv)*app.time
+        if hitbox[1] < 0:
+            app.hitboxes.remove(hitbox)
+
+def moveGameOverScreenUp(app):
+    app.gameOverY -= abs(app.player.yv)*app.time
+
 
 def mousePressed(app, event):
     lx, rx, ty, by = app.playButtonButton.buttonHitbox()
@@ -306,7 +352,7 @@ def redrawAll(app, canvas):
         drawPlayButton(app, canvas)
         drawPbIsPressed(app, canvas)
 
-    if app.playingGame:
+    if app.playingGame and app.gameOver != True:
         drawPlatform(app, canvas)
         drawBluePlatform(app, canvas)
         drawDoodle(app, canvas)    
@@ -315,6 +361,10 @@ def redrawAll(app, canvas):
         canvas.create_text(60, 25, 
         text= f"{app.score}", font = ("Comic Sans MS", 18))
 
+    if app.gameOver:
+        drawDoodle(app, canvas)
+        drawPlatform(app, canvas)
+        drawGameOverScreen(app, canvas)
 
 
 runApp(width = 600, height = 1000)
