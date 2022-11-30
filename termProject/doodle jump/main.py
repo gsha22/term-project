@@ -170,6 +170,9 @@ def timerFired(app):
                 if app.player.cy < 450:
                     if app.player.yv < 0:
                         monster.cy += abs(app.player.yv)*app.time
+                d = math.sqrt((app.player.cx-monster.cx)**2 + (app.player.cy-monster.cy)**2)
+                if d <= (40 + 40):   # approximations Right now 
+                    print("True")
 
             # so it doesn't seem like he jumps 2x the height
             if app.player.cy < 450:
