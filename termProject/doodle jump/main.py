@@ -21,6 +21,7 @@ def appStarted(app):
     app.doodle = app.loadImage("doodle.png")
     app.normaldoodle = app.scaleImage(app.doodle, 2/3)
     app.doodle = app.normaldoodle
+    app.rightDoodle = app.doodle.transpose(Image.FLIP_LEFT_RIGHT)
 
     app.shooter = app.loadImage("shooting_doodle.png")
     app.shooter = app.scaleImage(app.shooter, 6/5)
@@ -123,6 +124,7 @@ def timerFired(app):
             app.hitboxes.pop()
         # Gravity is always affecting the character 
         (app.player.cy, app.player.yv) = Gravity.falling(app.player.cy, app.player.yv, app.a, app.time)
+        (app.player.cx) += app.player.xv*app.time
 
         if app.gameOver != True:
             # collision gives boost in negative velocity 
@@ -182,22 +184,28 @@ def timerFired(app):
                 app.stopGravity = True
                 app.playingGame = False
 
-    
-    
-        
+
 def keyPressed(app, event):
     if app.playingGame and app.gameOver != True: 
         if event.key == "a":
-            if app.player.xv > 0:
-                app.doodle = app.doodle.transpose(Image.FLIP_LEFT_RIGHT)
-            app.player.xMovements(-4, app.time)
+            app.player.xVel(-2)
+            if app.player.xv < 0:
+                app.doodle = app.normaldoodle
         elif event.key == "d":
-            if app.player.xv <= 0:
-                app.doodle = app.doodle.transpose(Image.FLIP_LEFT_RIGHT)
-            app.player.xMovements(4, app.time)
+            app.player.xVel(2)
+            if app.player.xv > 0:
+                app.doodle = app.rightDoodle
+            
         # elif event.key == "Space":
         #     app.doodle = app.shooter
         #     app.bullets.append([app.player.cx, app.player.cy])
+
+def keyReleased(app, event):
+    if app.playingGame and app.gameOver != True: 
+        if event.key == "a":
+            app.player.xVel(0)
+        elif event.key == "d":
+            app.player.xVel(0)
         
 
 def drawDoodle(app, canvas):
@@ -213,7 +221,7 @@ def spawnPlatforms_and_Hitboxes(app):
     if app.time == 0:
         L = [[300, 900]]
         initialPlatforms = 15
-        initialMaxDistance = 100
+        initialMaxDistance = 150
         startingMap = Platform.createInitialMap(L, initialPlatforms, initialMaxDistance)
         for platform in startingMap:
             app.platforms.append(platform)
@@ -360,8 +368,13 @@ def mouseReleased(app, event):
     app.pbIsPressed = False
     lx, rx, ty, by = app.playAgainButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
-        app.gameOver = False
-        app.playingGame = True
+        appStarted(app)
+        # app.gameOver = False
+        # app.playingGame = True
+        # app.stopGravity = False
+        # app.time = 8.1
+        # app.platforms.append([2000, 2000])
+        # app.hitboxes.append([1000, 1000, 1000, 1000])
     app.pabIsPressed = False
         
 

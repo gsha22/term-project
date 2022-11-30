@@ -11,8 +11,7 @@ class Player:
         self.yv = yv
         self.bv = -2 
     
-    def xMovements(self, xv, t):
-        self.cx += xv*t
+    def xVel(self, xv):
         self.xv = xv
     
 
