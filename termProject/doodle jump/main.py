@@ -81,6 +81,15 @@ def appStarted(app):
     app.gameOverX = 300
     app.gameOverY = 1550
     app.stopGravity = False
+    app.playAgain = app.loadImage("playagain.png")
+    app.playAgain = app.scaleImage(app.playAgain, 2/3)
+    app.playAgainOn = app.loadImage("playagain_on.png")
+    app.playAgainOn = app.scaleImage(app.playAgainOn, 2/3)
+    app.pabX = 300
+    app.pabY = 1700
+    app.playAgainButton = CircleButton(app.pabX, app.pabY)
+    app.pabIsPressed = False
+
 
 
 def timerFired(app):
@@ -326,12 +335,22 @@ def moveGreenPlatformsUp(app):
 
 def moveGameOverScreenUp(app):
     app.gameOverY -= abs(app.player.yv)*app.time
+    app.playAgainButton.cy -= abs(app.player.yv)*app.time
 
-
+def drawPlayAgainButton(app, canvas):
+    canvas.create_image(app.playAgainButton.cx, app.playAgainButton.cy, 
+                                image=ImageTk.PhotoImage(app.playAgain))
+def drawPaButtonIsPressed(app, canvas):
+    if app.pabIsPressed == True:
+        canvas.create_image(app.playAgainButton.cx, app.playAgainButton.cy, 
+                                    image=ImageTk.PhotoImage(app.playAgainOn))
 def mousePressed(app, event):
     lx, rx, ty, by = app.playButtonButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
         app.pbIsPressed = True
+    lx, rx, ty, by = app.playAgainButton.buttonHitbox()
+    if lx < event.x < rx and ty < event.y < by:
+        app.pabIsPressed = True
 
 def mouseReleased(app, event):
     lx, rx, ty, by = app.playButtonButton.buttonHitbox()
@@ -339,6 +358,11 @@ def mouseReleased(app, event):
         app.startingMenu = False
         app.playingGame = True
     app.pbIsPressed = False
+    lx, rx, ty, by = app.playAgainButton.buttonHitbox()
+    if lx < event.x < rx and ty < event.y < by:
+        app.gameOver = False
+        app.playingGame = True
+    app.pabIsPressed = False
         
 
 
@@ -365,6 +389,8 @@ def redrawAll(app, canvas):
         drawDoodle(app, canvas)
         drawPlatform(app, canvas)
         drawGameOverScreen(app, canvas)
+        drawPlayAgainButton(app, canvas)
+        drawPaButtonIsPressed(app, canvas)
 
 
 runApp(width = 600, height = 1000)
