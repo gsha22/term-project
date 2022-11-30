@@ -14,7 +14,7 @@ from Platforms import Platform
 
 from Player import Player
 from Button import CircleButton
-
+from Enemy import Monster
 
 def appStarted(app): 
     # SPRITES:
@@ -25,6 +25,9 @@ def appStarted(app):
 
     app.shooter = app.loadImage("shooting_doodle.png")
     app.shooter = app.scaleImage(app.shooter, 6/5)
+
+    app.blueMonster = app.loadImage("blue_monster.png")
+    app.blueMonster = app.scaleImage(app.blueMonster, 3/5)
 
     app.platform = app.loadImage("green_platform.png")
     app.platform = app.scaleImage(app.platform, 2/3)
@@ -52,6 +55,8 @@ def appStarted(app):
     app.blueHitboxes = []
 
     app.bullets = []
+
+    app.monsterList = []
 
     app.timerDelay = 1
 
@@ -122,6 +127,8 @@ def timerFired(app):
             app.time = 0
             app.platforms.pop()
             app.hitboxes.pop()
+        
+
         # Gravity is always affecting the character 
         (app.player.cy, app.player.yv) = Gravity.falling(app.player.cy, app.player.yv, app.a, app.time)
         (app.player.cx) += app.player.xv*app.time
@@ -145,6 +152,7 @@ def timerFired(app):
                 app.score += round(abs(app.player.yv)*app.time)
             
             spawnPlatforms_and_Hitboxes(app)
+            spawnBlueMonster(app)
 
             app.time += 1
             if app.time % 1000 == 0:
@@ -154,6 +162,14 @@ def timerFired(app):
 
             moveBluePlatforms(app)
             moveGreenPlatforms(app)
+
+            
+            for monster in app.monsterList:
+                if monster.cy > 1000:
+                    app.monsterList.remove(monster)
+                if app.player.cy < 450:
+                    if app.player.yv < 0:
+                        monster.cy += abs(app.player.yv)*app.time
 
             # so it doesn't seem like he jumps 2x the height
             if app.player.cy < 450:
@@ -236,7 +252,7 @@ def spawnPlatforms_and_Hitboxes(app):
             app.platforms.append(platform)
             lx, ly, rx, ry = Platform.createHitbox(platform[0], platform[1])
             app.hitboxes.append([lx, ly, rx, ry])
-            
+          
     if app.gameSeconds % 5 == 0:
         if len(app.bluePlatforms) < 1:
             bcx, bcy = Platform.basicSpawn(200, 400, -75, -5)
@@ -297,6 +313,16 @@ def moveBluePlatforms(app):
             app.bluedx *= -1
         if hitbox[1] > 1000:
             app.blueHitboxes.remove(hitbox)
+
+def spawnBlueMonster(app):
+    if app.gameSeconds % 5 == 0 and len(app.monsterList) < 1:
+        cx, cy = Monster.spawnEnemy()
+        return app.monsterList.append(Monster(cx, cy)) 
+
+def drawBlueMonster(app, canvas):
+    for monster in app.monsterList:
+        canvas.create_image(monster.cx, monster.cy, 
+                    image=ImageTk.PhotoImage(app.blueMonster))
 
 
 # For starting menu 
@@ -392,6 +418,7 @@ def redrawAll(app, canvas):
     if app.playingGame and app.gameOver != True:
         drawPlatform(app, canvas)
         drawBluePlatform(app, canvas)
+        drawBlueMonster(app, canvas)
         drawDoodle(app, canvas)    
         drawBullet(app, canvas)
         canvas.create_rectangle(0, 0, 600, 50, fill = "burlywood1", outline = "burlywood1")
