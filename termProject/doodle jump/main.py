@@ -24,7 +24,7 @@ def appStarted(app):
     app.rightDoodle = app.doodle.transpose(Image.FLIP_LEFT_RIGHT)
 
     app.shooter = app.loadImage("shooting_doodle.png")
-    app.shooter = app.scaleImage(app.shooter, 6/5)
+    app.shooter = app.scaleImage(app.shooter, 2/3)
 
     app.blueMonster = app.loadImage("blue_monster.png")
     app.blueMonster = app.scaleImage(app.blueMonster, 3/5)
@@ -154,6 +154,7 @@ def timerFired(app):
 
             if app.player.yv < 0:
                 app.score += round(abs(app.player.yv)*app.time)
+                # jumping down helps reduce the value 
             
             spawnPlatforms_and_Hitboxes(app)
             spawnBlueMonster(app)
@@ -206,22 +207,23 @@ def timerFired(app):
             if app.player.cy > 1200 and len(app.platforms) == 0:
                 app.stopGravity = True
                 app.playingGame = False
-
+        
+    if len(app.bullets) > 0:
+        app.doodle = app.shooter
+    
 
 def keyPressed(app, event):
     if app.playingGame and app.gameOver != True and app.dazed != True: 
         if event.key == "a":
             app.player.xVel(-1.5)
-            if app.player.xv < 0:
-                app.doodle = app.normaldoodle
+            if app.player.xv < 0 and len(app.bullets) == 0:
+                    app.doodle = app.normaldoodle
         elif event.key == "d":
             app.player.xVel(1.5)
-            if app.player.xv > 0:
+            if app.player.xv > 0 and len(app.bullets) == 0:
                 app.doodle = app.rightDoodle
-            
-        # elif event.key == "Space":
-        #     app.doodle = app.shooter
-        #     app.bullets.append([app.player.cx, app.player.cy])
+        elif event.key == "Space":
+            app.bullets.append([app.player.cx, app.player.cy])
 
 def keyReleased(app, event):
     if app.playingGame and app.gameOver != True: 
@@ -291,6 +293,7 @@ def moveGreenPlatforms(app):
         if hitbox[1] > 1000:
             app.hitboxes.remove(hitbox)
 
+# high score is making a text file and saving the scores there and it reads it from there every time 
 
 def drawBluePlatform(app, canvas):
     for platform in app.bluePlatforms:
@@ -402,14 +405,8 @@ def mouseReleased(app, event):
     lx, rx, ty, by = app.playAgainButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
         appStarted(app)
-        # app.gameOver = False
-        # app.playingGame = True
-        # app.stopGravity = False
-        # app.time = 8.1
-        # app.platforms.append([2000, 2000])
-        # app.hitboxes.append([1000, 1000, 1000, 1000])
     app.pabIsPressed = False
-        
+
 
 
 def redrawAll(app, canvas):
