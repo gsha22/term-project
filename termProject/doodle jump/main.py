@@ -28,6 +28,7 @@ def appStarted(app):
 
     app.blueMonster = app.loadImage("blue_monster.png")
     app.blueMonster = app.scaleImage(app.blueMonster, 3/5)
+    app.monsterdx = 4
 
     app.platform = app.loadImage("green_platform.png")
     app.platform = app.scaleImage(app.platform, 2/3)
@@ -38,16 +39,29 @@ def appStarted(app):
     app.bluePlatform = app.scaleImage(app.bluePlatform, 2/3)
     app.bluedx = 3
 
+    app.bullet = app.loadImage("bullet.png")
+    app.bullet = app.scaleImage(app.bullet, 2/3)
+
     #BACKGROUND
     app.background = app.loadImage("background.png")
     app.background = app.scaleImage(app.background, 4/3)
+
+    # dazed animation 
+    app.dazed1 = app.loadImage("stars1.png")
+    app.dazed2 = app.loadImage("stars2.png")
+    app.dazed3 = app.loadImage("stars3.png")
+    app.dazedList = [app.dazed1, app.dazed2, app.dazed3]
+    app.dazedIndex = 0
+    app.dazedImg = app.dazedList[app.dazedIndex]
 
     app.player = Player(300, 400, 0, 0)
 
     app.a = 0.01
     app.time = 0
     app.gameSeconds = 0
-    
+    app.waveTime = 0
+
+
     app.platforms = []
     app.hitboxes = []
 
@@ -101,7 +115,6 @@ def appStarted(app):
 
 
 def timerFired(app):
-
     if app.startingMenu:
 
         if app.time == 0:
@@ -143,6 +156,14 @@ def timerFired(app):
                     app.player.yv = Gravity.jump()
                 if Collisions.isCollision(app.player.cx, app.player.cy, app.blueHitboxes) and app.player.yv > 0:
                     app.player.yv = Gravity.jump() 
+                
+            if enemyCollisions(app):
+                app.doodle = app.normaldoodle
+                app.dazed = True
+                app.player.yv = 0
+                
+            if app.dazed:
+                loopStars(app)
 
             # difficulty
             if 1500 < app.score < 2000 and app.max_green_y_distance < 150:
@@ -159,6 +180,7 @@ def timerFired(app):
             spawnPlatforms_and_Hitboxes(app)
             spawnBlueMonster(app)
 
+            app.waveTime += 0.8
             app.time += 1
             if app.time % 1000 == 0:
                 app.gameSeconds += 1
@@ -167,17 +189,10 @@ def timerFired(app):
 
             moveBluePlatforms(app)
             moveGreenPlatforms(app)
-
             
-            for monster in app.monsterList:
-                if monster.cy > 1000:
-                    app.monsterList.remove(monster)
-                if app.player.cy < 450:
-                    if app.player.yv < 0:
-                        monster.cy += abs(app.player.yv)*app.time
-                d = math.sqrt((app.player.cx-monster.cx)**2 + (app.player.cy-monster.cy)**2)
-                if d <= (40 + 40):   # approximations Right now 
-                    app.dazed = True
+            
+            monsterMovement(app)
+
 
             # so it doesn't seem like he jumps 2x the height
             if app.player.cy < 450:
@@ -191,9 +206,10 @@ def timerFired(app):
 
             # update bullet
             for bullet in app.bullets:
-                bullet[1] -= (4)*app.time
+                bullet[1] -= (8)*app.time
                 if bullet[1] < 0:
                     app.bullets.remove(bullet)
+                
     
             if app.player.cy > 1000:
                 app.gameOver = True
@@ -207,18 +223,21 @@ def timerFired(app):
             if app.player.cy > 1200 and len(app.platforms) == 0:
                 app.stopGravity = True
                 app.playingGame = False
+            loopStars(app)
         
     if len(app.bullets) > 0:
         app.doodle = app.shooter
+
     
+
 
 def keyPressed(app, event):
     if app.playingGame and app.gameOver != True and app.dazed != True: 
-        if event.key == "a":
+        if event.key == 'a':
             app.player.xVel(-1.5)
             if app.player.xv < 0 and len(app.bullets) == 0:
                     app.doodle = app.normaldoodle
-        elif event.key == "d":
+        elif event.key == 'd':
             app.player.xVel(1.5)
             if app.player.xv > 0 and len(app.bullets) == 0:
                 app.doodle = app.rightDoodle
@@ -227,9 +246,9 @@ def keyPressed(app, event):
 
 def keyReleased(app, event):
     if app.playingGame and app.gameOver != True: 
-        if event.key == "a":
+        if event.key == 'a':
             app.player.xVel(0)
-        elif event.key == "d":
+        elif event.key == 'd':
             app.player.xVel(0)
         
 
@@ -237,10 +256,9 @@ def drawDoodle(app, canvas):
     canvas.create_image(app.player.cx, app.player.cy, image=ImageTk.PhotoImage(app.doodle))
 
 def drawBullet(app, canvas):
-    r = 5
     for bullet in app.bullets:
-        cx, cy = bullet
-        canvas.create_oval(cx-r, cy-r, cx+r, cy+r, fill = 'red')
+        cx, cy = bullet[0], bullet[1]
+        canvas.create_image(cx, cy, image=ImageTk.PhotoImage(app.bullet))
 
 def spawnPlatforms_and_Hitboxes(app):
     if app.time == 0:
@@ -329,10 +347,49 @@ def spawnBlueMonster(app):
         cx, cy = Monster.spawnEnemy()
         return app.monsterList.append(Monster(cx, cy)) 
 
+def monsterMovement(app):
+    for monster in app.monsterList:
+        if monster.cy > 1000:
+            app.monsterList.remove(monster)
+        if app.player.cy < 450:
+            if app.player.yv < 0:
+                monster.cy += abs(app.player.yv)*app.time
+        monster.cy += 5*math.sin(app.waveTime)
+        monster.cx += app.monsterdx
+        if monster.cx > 570 or monster.cx < 30:
+            app.monsterdx *= -1
+            app.blueMonster = app.blueMonster.transpose(Image.FLIP_LEFT_RIGHT)
+        lx, rx, ty, by = Monster.enemyHitbox(monster.cx, monster.cy)
+        for bullet in app.bullets:
+            if lx <= bullet[0] <= rx and ty <= bullet[1] <= by:
+                app.bullets.remove(bullet)
+                app.monsterList.pop()
+
+
 def drawBlueMonster(app, canvas):
     for monster in app.monsterList:
         canvas.create_image(monster.cx, monster.cy, 
                     image=ImageTk.PhotoImage(app.blueMonster))
+
+def enemyCollisions(app):
+    for monster in app.monsterList:
+        xDistance = abs(app.player.cx - monster.cx)
+        yDistance = abs(app.player.cy - monster.cy)
+        if xDistance <= (20 + 30) and yDistance <= (40 + 30): # distance from middle to side or top/bot
+            return True
+    return False
+        
+
+def loopStars(app):
+    app.dazedIndex += 1
+    if app.dazedIndex > 2:
+        app.dazedIndex = 0
+    if app.dazedIndex < 3:
+        app.dazedImg = app.dazedList[app.dazedIndex]
+
+def drawStars(app, canvas):
+    if app.dazed:
+        canvas.create_image(app.player.cx+10, app.player.cy-30, image=ImageTk.PhotoImage(app.dazedImg))
 
 
 # For starting menu 
@@ -408,7 +465,6 @@ def mouseReleased(app, event):
     app.pabIsPressed = False
 
 
-
 def redrawAll(app, canvas):
     drawBackground(app, canvas)
 
@@ -423,15 +479,17 @@ def redrawAll(app, canvas):
         drawPlatform(app, canvas)
         drawBluePlatform(app, canvas)
         drawBlueMonster(app, canvas)
-        drawDoodle(app, canvas)    
         drawBullet(app, canvas)
+        drawDoodle(app, canvas)  
+        drawStars(app, canvas)
         canvas.create_rectangle(0, 0, 600, 50, fill = "burlywood1", outline = "burlywood1")
         canvas.create_text(60, 25, 
         text= f"{app.score}", font = ("Comic Sans MS", 18))
 
     if app.gameOver:
-        drawDoodle(app, canvas)
         drawPlatform(app, canvas)
+        drawDoodle(app, canvas)
+        drawStars(app, canvas)
         drawGameOverScreen(app, canvas)
         drawPlayAgainButton(app, canvas)
         drawPaButtonIsPressed(app, canvas)

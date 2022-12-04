@@ -9,12 +9,12 @@ class Monster:
         self.cx = cx
         self.cy = cy
     
-    def hitbox(self):
-        lx = self.cx - 40
-        rx = self.cx + 40
-        ty = self.cy - 40
-        by = self.cy + 40
-        return lx, rx, ty, by 
+    def enemyHitbox(cx, cy):
+        lx = cx - 30
+        rx = cx + 30
+        ty = cy - 40
+        by = cy + 40
+        return lx, rx, ty, by
     
     def spawnEnemy():
         lx, hx = 50, 550
