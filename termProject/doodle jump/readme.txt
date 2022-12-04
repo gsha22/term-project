@@ -8,3 +8,6 @@ I got the pictures/sprites from online:
 https://www.spriters-resource.com/mobile/doodlejump/
 https://www.vg-resource.com/thread-21558.html
 https://www.pinterest.com/pin/44191640069279768/
+
+if you couldn't tell, I drew the springs myself because I couldn't find the 
+sprites online lol

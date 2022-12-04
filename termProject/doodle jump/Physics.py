@@ -4,7 +4,7 @@ Game Physics Classes
     also keeping track of total height 
 '''
 
-class Gravity:   
+class Gravity:
     def falling(y, v, a, t):
         dy = v*t + (1/2)*a*t**2
         if v < 2:

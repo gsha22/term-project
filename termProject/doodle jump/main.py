@@ -39,6 +39,13 @@ def appStarted(app):
     app.bluePlatform = app.scaleImage(app.bluePlatform, 2/3)
     app.bluedx = 3
 
+
+    app.spring = app.loadImage("spring.png")
+    app.spring = app.scaleImage(app.spring, 2/3)
+    app.extendedSpring = app.loadImage("spring_extended.png")
+    app.extendedSpring = app.scaleImage(app.extendedSpring, 2/3)
+    app.springImg = app.spring
+
     app.bullet = app.loadImage("bullet.png")
     app.bullet = app.scaleImage(app.bullet, 2/3)
 
@@ -71,6 +78,7 @@ def appStarted(app):
     app.bullets = []
 
     app.monsterList = []
+    app.springs = []
 
     app.timerDelay = 1
 
@@ -158,12 +166,13 @@ def timerFired(app):
                     app.player.yv = Gravity.jump() 
                 
             if enemyCollisions(app):
-                app.doodle = app.normaldoodle
                 app.dazed = True
                 app.player.yv = 0
                 
             if app.dazed:
                 loopStars(app)
+                app.doodle = app.normaldoodle
+                
 
             # difficulty
             if 1500 < app.score < 2000 and app.max_green_y_distance < 150:
@@ -189,10 +198,10 @@ def timerFired(app):
 
             moveBluePlatforms(app)
             moveGreenPlatforms(app)
-            
-            
             monsterMovement(app)
 
+            spawnSpring(app)
+            moveSpring(app)
 
             # so it doesn't seem like he jumps 2x the height
             if app.player.cy < 450:
@@ -260,6 +269,7 @@ def drawBullet(app, canvas):
         cx, cy = bullet[0], bullet[1]
         canvas.create_image(cx, cy, image=ImageTk.PhotoImage(app.bullet))
 
+
 def spawnPlatforms_and_Hitboxes(app):
     if app.time == 0:
         L = [[300, 900]]
@@ -286,6 +296,38 @@ def spawnPlatforms_and_Hitboxes(app):
             blx, bly, brx, bry = Platform.createHitbox(bcx, bcy)
             app.bluePlatforms.append([bcx, bcy])
             app.blueHitboxes.append([blx, bly, brx, bry])
+
+
+def spawnSpring(app):
+    if len(app.springs) < 1 and app.gameSeconds % 5 == 0:
+        app.springImg = app.spring
+        platformNum = random.randint(0, len(app.platforms)-1)
+        pcx, pcy = app.platforms[platformNum] 
+        if pcy < 0:
+            # plx, ply, prx, pby = Platform.createHitbox(pcx, pcy)
+            # print(plx, prx)
+            scx = pcx - 20
+            scy = pcy - 40
+            app.springs.append([scx, scy])
+
+
+def moveSpring(app):
+    for spring in app.springs:
+        if app.player.cy < 450:
+            if app.player.yv < 0:
+                spring[1] += abs(app.player.yv)*app.time            
+        if spring[1] > 1000:
+            app.springs.remove(spring) 
+        lx, rx, ty, by = Player.playerHitbox(app.player.cx, app.player.cy)
+        if lx < spring[0] < rx and ty < spring[1] - 5 < by and app.player.yv > 0:
+            app.player.yv = -4
+            app.springImg = app.extendedSpring
+
+
+def drawSpring(app, canvas):
+    for spring in app.springs:
+        cx, cy = spring[0], spring[1]
+        canvas.create_image(cx, cy, image=ImageTk.PhotoImage(app.springImg))
 
 def drawBackground(app, canvas):
     canvas.create_image(300, 500, image=ImageTk.PhotoImage(app.background))
@@ -478,6 +520,7 @@ def redrawAll(app, canvas):
     if app.playingGame and app.gameOver != True:
         drawPlatform(app, canvas)
         drawBluePlatform(app, canvas)
+        drawSpring(app, canvas)
         drawBlueMonster(app, canvas)
         drawBullet(app, canvas)
         drawDoodle(app, canvas)  
