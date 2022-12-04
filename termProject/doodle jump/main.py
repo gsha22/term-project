@@ -14,6 +14,7 @@ from Platforms import Platform
 
 from Player import Player
 from Button import CircleButton
+from Button import RectangleButton
 from Enemy import Monster
 
 def appStarted(app): 
@@ -119,6 +120,18 @@ def appStarted(app):
     app.pabY = 1700
     app.playAgainButton = CircleButton(app.pabX, app.pabY)
     app.pabIsPressed = False
+
+    app.gameOverTitle = app.loadImage("game_over.png")
+    app.playerName = 'Doodler'
+    app.ncbX = 400
+    app.ncbY = 1590
+    app.nameChangeButton = RectangleButton(app.ncbX, app.ncbY)
+    app.changeName = False
+
+    app.ttc = app.loadImage("tap_to_change.png")
+
+    # scoreboard 
+    app.scoreboard = {}
 
 
 
@@ -320,8 +333,9 @@ def moveSpring(app):
             app.springs.remove(spring) 
         lx, rx, ty, by = Player.playerHitbox(app.player.cx, app.player.cy)
         if lx < spring[0] < rx and ty < spring[1] - 5 < by and app.player.yv > 0:
-            app.player.yv = -4
-            app.springImg = app.extendedSpring
+            if app.dazed != True:
+                app.player.yv = -4
+                app.springImg = app.extendedSpring
 
 
 def drawSpring(app, canvas):
@@ -459,10 +473,14 @@ def drawPbIsPressed(app, canvas):
 
 # for game over screen 
 def drawGameOverScreen(app, canvas):
-    canvas.create_text(app.gameOverX, app.gameOverY-50, 
-                    text = "Game Over!", font = ("Comic Sans MS", 30))
-    canvas.create_text(app.gameOverX, app.gameOverY+50, 
-                text= f"Your Score: {app.score}", font = ("Comic Sans MS", 20))
+    canvas.create_image(app.gameOverX, app.gameOverY-120, 
+                    image = ImageTk.PhotoImage(app.gameOverTitle))
+    canvas.create_text(app.gameOverX, app.gameOverY-20, 
+                text= f"your Score: {app.score}", font = ("Comic Sans MS", 25))
+    # canvas.create_rectangle(app.gameOverX+30, app.gameOverY+20, app.gameOverX+170, app.gameOverY+60)
+    canvas.create_text(app.gameOverX, app.gameOverY+40, 
+                text = f"your name: {app.playerName}", font = ("Comic Sans MS", 25))
+    canvas.create_image(app.gameOverX+180, app.gameOverY+130, image = ImageTk.PhotoImage(app.ttc))
     
 
 def moveGreenPlatformsUp(app):
@@ -479,6 +497,7 @@ def moveGreenPlatformsUp(app):
 def moveGameOverScreenUp(app):
     app.gameOverY -= abs(app.player.yv)*app.time
     app.playAgainButton.cy -= abs(app.player.yv)*app.time
+    app.nameChangeButton.cy -= abs(app.player.yv)*app.time
 
 def drawPlayAgainButton(app, canvas):
     canvas.create_image(app.playAgainButton.cx, app.playAgainButton.cy, 
@@ -487,13 +506,27 @@ def drawPaButtonIsPressed(app, canvas):
     if app.pabIsPressed == True:
         canvas.create_image(app.playAgainButton.cx, app.playAgainButton.cy, 
                                     image=ImageTk.PhotoImage(app.playAgainOn))
+
+# def drawNameChangeButton(app, canvas):
+#     lx, rx, ty, by = app.nameChangeButton.buttonHitbox()
+#     canvas.create_rectangle(lx, ty, rx, by)
+
+# Mouse functions 
 def mousePressed(app, event):
     lx, rx, ty, by = app.playButtonButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
         app.pbIsPressed = True
+
     lx, rx, ty, by = app.playAgainButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
         app.pabIsPressed = True
+
+    lx, rx, ty, by = app.nameChangeButton.buttonHitbox()
+    if lx < event.x < rx and ty < event.y < by:
+        name = app.getUserInput("Enter your name!")
+        if name != None:
+            app.playerName = name
+            addNewScore(app)
 
 def mouseReleased(app, event):
     lx, rx, ty, by = app.playButtonButton.buttonHitbox()
@@ -501,10 +534,13 @@ def mouseReleased(app, event):
         app.startingMenu = False
         app.playingGame = True
     app.pbIsPressed = False
+
     lx, rx, ty, by = app.playAgainButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
         appStarted(app)
     app.pabIsPressed = False
+
+
 
 
 def redrawAll(app, canvas):
@@ -536,6 +572,7 @@ def redrawAll(app, canvas):
         drawGameOverScreen(app, canvas)
         drawPlayAgainButton(app, canvas)
         drawPaButtonIsPressed(app, canvas)
+        # drawNameChangeButton(app, canvas)
 
 
 runApp(width = 600, height = 1000)
