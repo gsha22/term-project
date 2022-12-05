@@ -154,6 +154,15 @@ def appStarted(app):
     # leaderboard screen
     app.leaderboard = False
 
+    app.menuButton = CircleButton(300, 900)
+    app.menu = app.loadImage("menu.png")
+    app.menu = app.scaleImage(app.menu, 2/3)
+
+    app.menuOn = app.loadImage("menu-on.png")
+    app.menuOn = app.scaleImage(app.menuOn, 2/3)
+
+    app.menuIsPressed = False
+
 
 
 def timerFired(app):
@@ -531,6 +540,13 @@ def drawLeaderboard(app, canvas):
         font = ("Comic Sans MS", 20))
     canvas.create_text(300, 100, text = "Top 10 Jumpers:", font = ("Comic Sans MS bold", 30))
 
+def drawMenuButton(app, canvas):
+    canvas.create_image(app.menuButton.cx, app.menuButton.cy, image=ImageTk.PhotoImage(app.menu))
+
+def drawMenuButtonOn(app, canvas):
+    if app.menuIsPressed:
+        canvas.create_image(app.menuButton.cx, app.menuButton.cy, image=ImageTk.PhotoImage(app.menuOn))
+
 
 # for game over screen 
 def drawGameOverScreen(app, canvas):
@@ -604,6 +620,10 @@ def mousePressed(app, event):
     if lx < event.x < rx and ty < event.y < by:
         app.pabIsPressed = True
 
+    lx, rx, ty, by = app.menuButton.buttonHitbox()
+    if lx < event.x < rx and ty < event.y < by:
+        app.menuIsPressed = True 
+
     lx, rx, ty, by = app.nameChangeButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
         name = app.getUserInput("Enter your name!\nYour score won't be saved if you don't!")
@@ -625,6 +645,12 @@ def mouseReleased(app, event):
         app.leaderboard = True
     app.trophyPressed = False
 
+    lx, rx, ty, by = app.menuButton.buttonHitbox()
+    if lx < event.x < rx and ty < event.y < by:
+        app.startingMenu = True
+        app.leaderboard = False
+    app.menuIsPressed = False
+
     lx, rx, ty, by = app.playAgainButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
         appStarted(app)
@@ -645,6 +671,8 @@ def redrawAll(app, canvas):
     
     if app.leaderboard:
         drawLeaderboard(app, canvas)
+        drawMenuButton(app, canvas)
+        drawMenuButtonOn(app, canvas)
 
     if app.playingGame and app.gameOver != True:
         drawPlatform(app, canvas)
