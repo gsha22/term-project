@@ -15,8 +15,8 @@ class Player:
         self.xv = xv
     
     def playerHitbox(cx, cy):
-        lx = cx - 20
-        rx = cy + 20
+        lx = cx - 25
+        rx = cx + 25
         ty = cy - 30
         by = cy + 30
         return lx, rx, ty, by

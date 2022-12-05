@@ -17,6 +17,18 @@ from Button import CircleButton
 from Button import RectangleButton
 from Enemy import Monster
 
+# https://www.cs.cmu.edu/~112/notes/notes-strings.html#basicFileIO
+import ast
+
+def readFile(path):
+    with open(path, "rt") as f:
+        return f.read()
+
+def writeFile(path, contents):
+    with open(path, "wt") as f:
+        f.write(contents)
+
+
 def appStarted(app): 
     # SPRITES:
     app.doodle = app.loadImage("doodle.png")
@@ -131,7 +143,16 @@ def appStarted(app):
     app.ttc = app.loadImage("tap_to_change.png")
 
     # scoreboard 
-    app.scoreboard = {}
+    app.scoreboard = ast.literal_eval(readFile('scoreboard.txt'))
+    
+    app.trophy = app.loadImage("scorescup.png")
+    app.trophyOn = app.loadImage("scorescup_on.png")
+    app.trophyButton = RectangleButton(450, 700)
+
+    app.trophyPressed = False
+
+    # leaderboard screen
+    app.leaderboard = False
 
 
 
@@ -337,6 +358,9 @@ def moveSpring(app):
                 app.player.yv = -4
                 app.springImg = app.extendedSpring
 
+# def drawPlayerHitbox(app, canvas):
+#     lx, rx, ty, by = Player.playerHitbox(app.player.cx, app.player.cy)
+#     canvas.create_rectangle(lx, ty, rx, by)
 
 def drawSpring(app, canvas):
     for spring in app.springs:
@@ -470,17 +494,59 @@ def drawPbIsPressed(app, canvas):
         canvas.create_image(app.playButtonButton.cx, app.playButtonButton.cy, 
                                     image=ImageTk.PhotoImage(app.pressedPB))
 
+def drawTrophy(app, canvas):
+    canvas.create_image(app.trophyButton.cx, app.trophyButton.cy, image=ImageTk.PhotoImage(app.trophy))
+
+def drawTrophyOn(app, canvas):
+    if app.trophyPressed:
+        canvas.create_image(app.trophyButton.cx, app.trophyButton.cy, image=ImageTk.PhotoImage(app.trophyOn))
+
+# for leaderboard screen
+def topTen(app):
+    bestJumpers = []
+    tempDict = copy.deepcopy(app.scoreboard)
+    l = len(tempDict)
+    return topTenHelper(bestJumpers, tempDict, l)
+
+def topTenHelper(bestJumpers, tempDict, l):
+    if len(bestJumpers) == 10:
+        return bestJumpers
+    elif len(bestJumpers) == l:
+        return bestJumpers
+    else:
+        max = 0
+        name = None
+        for key in tempDict:
+            if tempDict[key] > max:
+                max = tempDict[key]
+                name = key
+        bestJumpers.append((name, max))
+        del tempDict[name]
+        return topTenHelper(bestJumpers, tempDict, l)
+
+def drawLeaderboard(app, canvas):
+    leaders = topTen(app)
+    for i in range(len(leaders)):
+        canvas.create_text(300, 200+100*i, 
+        text = f"{i+1}.) {leaders[i][0]}: {leaders[i][1]} m", 
+        font = ("Comic Sans MS", 20))
+    canvas.create_text(300, 100, text = "Top 10 Jumpers:", font = ("Comic Sans MS bold", 30))
+
 
 # for game over screen 
 def drawGameOverScreen(app, canvas):
-    canvas.create_image(app.gameOverX, app.gameOverY-120, 
+    canvas.create_image(app.gameOverX, app.gameOverY-200, 
                     image = ImageTk.PhotoImage(app.gameOverTitle))
     canvas.create_text(app.gameOverX, app.gameOverY-20, 
-                text= f"your Score: {app.score}", font = ("Comic Sans MS", 25))
+                text= f"your height: {app.score} m", font = ("Comic Sans MS", 25))
     # canvas.create_rectangle(app.gameOverX+30, app.gameOverY+20, app.gameOverX+170, app.gameOverY+60)
     canvas.create_text(app.gameOverX, app.gameOverY+40, 
                 text = f"your name: {app.playerName}", font = ("Comic Sans MS", 25))
     canvas.create_image(app.gameOverX+180, app.gameOverY+130, image = ImageTk.PhotoImage(app.ttc))
+
+    highScoreHolder, score = highScore(app)
+    canvas.create_text(app.gameOverX, app.gameOverY-80, 
+        text= f"#1 jumper: {highScoreHolder}: {score} m", font = ("Comic Sans MS", 25))
     
 
 def moveGreenPlatformsUp(app):
@@ -511,11 +577,29 @@ def drawPaButtonIsPressed(app, canvas):
 #     lx, rx, ty, by = app.nameChangeButton.buttonHitbox()
 #     canvas.create_rectangle(lx, ty, rx, by)
 
+# rewrite the file to add new player and their score
+def reWriteFile(app, name):
+    app.scoreboard[name] = app.score
+    writeFile('scoreboard.txt', repr(app.scoreboard))
+
+def highScore(app):
+    holder = None
+    highScore = 0
+    for name in app.scoreboard:
+        if app.scoreboard[name] > highScore:
+            highScore = app.scoreboard[name]
+            holder = name
+    return holder, highScore
+
 # Mouse functions 
 def mousePressed(app, event):
     lx, rx, ty, by = app.playButtonButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
         app.pbIsPressed = True
+    
+    lx, rx, ty, by = app.trophyButton.buttonHitbox()
+    if lx < event.x < rx and ty < event.y < by:
+        app.trophyPressed = True
 
     lx, rx, ty, by = app.playAgainButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
@@ -523,10 +607,11 @@ def mousePressed(app, event):
 
     lx, rx, ty, by = app.nameChangeButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
-        name = app.getUserInput("Enter your name!")
-        if name != None:
+        name = app.getUserInput("Enter your name!\nYour score won't be saved if you don't!")
+        if name != None and name != 'Doodler' and name != '':
             app.playerName = name
-            addNewScore(app)
+            reWriteFile(app, name)
+
 
 def mouseReleased(app, event):
     lx, rx, ty, by = app.playButtonButton.buttonHitbox()
@@ -535,11 +620,16 @@ def mouseReleased(app, event):
         app.playingGame = True
     app.pbIsPressed = False
 
+    lx, rx, ty, by = app.trophyButton.buttonHitbox()
+    if lx < event.x < rx and ty < event.y < by:
+        app.startingMenu = False
+        app.leaderboard = True
+    app.trophyPressed = False
+
     lx, rx, ty, by = app.playAgainButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
         appStarted(app)
     app.pabIsPressed = False
-
 
 
 
@@ -552,6 +642,11 @@ def redrawAll(app, canvas):
         drawTitle(app, canvas)
         drawPlayButton(app, canvas)
         drawPbIsPressed(app, canvas)
+        drawTrophy(app, canvas)
+        drawTrophyOn(app, canvas)
+    
+    if app.leaderboard:
+        drawLeaderboard(app, canvas)
 
     if app.playingGame and app.gameOver != True:
         drawPlatform(app, canvas)
@@ -560,6 +655,7 @@ def redrawAll(app, canvas):
         drawBlueMonster(app, canvas)
         drawBullet(app, canvas)
         drawDoodle(app, canvas)  
+        # drawPlayerHitbox(app, canvas)
         drawStars(app, canvas)
         canvas.create_rectangle(0, 0, 600, 50, fill = "burlywood1", outline = "burlywood1")
         canvas.create_text(60, 25, 
