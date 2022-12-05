@@ -391,7 +391,6 @@ def moveGreenPlatforms(app):
         if hitbox[1] > 1000:
             app.hitboxes.remove(hitbox)
 
-# high score is making a text file and saving the scores there and it reads it from there every time 
 
 def drawBluePlatform(app, canvas):
     for platform in app.bluePlatforms:
@@ -527,7 +526,7 @@ def topTenHelper(bestJumpers, tempDict, l):
 def drawLeaderboard(app, canvas):
     leaders = topTen(app)
     for i in range(len(leaders)):
-        canvas.create_text(300, 200+100*i, 
+        canvas.create_text(300, 200+60*i, 
         text = f"{i+1}.) {leaders[i][0]}: {leaders[i][1]} m", 
         font = ("Comic Sans MS", 20))
     canvas.create_text(300, 100, text = "Top 10 Jumpers:", font = ("Comic Sans MS bold", 30))
@@ -630,7 +629,6 @@ def mouseReleased(app, event):
     if lx < event.x < rx and ty < event.y < by:
         appStarted(app)
     app.pabIsPressed = False
-
 
 
 def redrawAll(app, canvas):
