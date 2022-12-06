@@ -103,6 +103,8 @@ def appStarted(app):
     app.mouseX = 0
     app.mouseY = 0
 
+    app.movement = set()
+
     app.dazed = False
 
     # Starting Menu
@@ -229,6 +231,8 @@ def timerFired(app):
             if app.dazed:
                 loopStars(app)
                 app.doodle = app.normaldoodle
+            
+            xDirectionMovement(app)
                 
 
             # difficulty
@@ -297,27 +301,36 @@ def timerFired(app):
         app.doodle = app.shooter
 
     
-
-
-def keyPressed(app, event):
-    if app.playingGame and app.gameOver != True and app.dazed != True: 
-        if event.key == 'a':
+def xDirectionMovement(app):
+    if 'a' in app.movement:
+        if app.player.xVel != -1.5:
             app.player.xVel(-1.5)
             if app.player.xv < 0 and len(app.bullets) == 0:
                     app.doodle = app.normaldoodle
-        elif event.key == 'd':
+    elif 'd' in app.movement:
+        if app.player.xVel != 1.5:
             app.player.xVel(1.5)
             if app.player.xv > 0 and len(app.bullets) == 0:
                 app.doodle = app.rightDoodle
+
+def keyPressed(app, event):
+    print(event.key)
+    if app.playingGame and app.gameOver != True and app.dazed != True: 
+        if 'a' not in app.movement and event.key == 'a':
+            app.movement.add('a')
+        elif 'd' not in app.movement and event.key == 'd':
+            app.movement.add('d')
         elif event.key == "Space":
             pygame.mixer.Sound.play(app.shoot)
             app.bullets.append([app.player.cx, app.player.cy])
 
 def keyReleased(app, event):
     if app.playingGame and app.gameOver != True: 
-        if event.key == 'a':
+        if 'a' in app.movement and event.key == 'a':
+            app.movement.remove('a')
             app.player.xVel(0)
-        elif event.key == 'd':
+        elif 'd' in app.movement and event.key == 'd':
+            app.movement.remove('d')
             app.player.xVel(0)
         
 
@@ -329,7 +342,7 @@ def drawBullet(app, canvas):
         cx, cy = bullet[0], bullet[1]
         canvas.create_image(cx, cy, image=ImageTk.PhotoImage(app.bullet))
 
-
+    
 def spawnPlatforms_and_Hitboxes(app):
     if app.time == 0:
         L = [[300, 900]]

@@ -1,12 +1,32 @@
 This game is called 112 Jump, and it is based on the famous mobile game Doodle
 Jump. It is very similar to the real game because it is a vertical jumper that
-utilizes physics and player movement to reach the highest possible height. The 
-player can use the "a" and "d" key to move left and right respectively, and the 
-Space bar to shoot enemies. The goal is to just jump as high as you can! Once 
+utilizes physics and player movement to reach the highest possible height. Once 
 you finish, you can enter your name and see if you're on the top 10 leaderboard!
 
-To run the game, use the ctrl+b shortcut in the file "main.py." No need to set 
-any extra things up! 
+Controls:
+    "a" to move left
+    "d" to move right
+    "Space bar" to shoot
+
+Set Up:
+
+To run the game, use the ctrl+b shortcut in the file "main.py." 
+
+To get the best gameplay, you'll have to change some settings on your computer 
+to have the best sideways movement. Don't worry though, it isn't anything 
+drastic. This is needed because Keypressed spams the key pressed and will freeze
+the program if we don't change some settings beforehand. 
+
+
+For windows:
+> type in "Keyboard" into the bottom left search. Then put "Repeat delay" all 
+  the way to Long, and then put "Repeat rate" all the way to slow. 
+
+For macOS:
+> Choose the apple menu then go to system settings, then click Keyboard. 
+Drag the "Delay until repeat" to the longest possible, and then draw the "Key
+repeat rate" to as slow as possible as well. 
+
 
 For this game, I had to install Pillow for the imaging library, and Pygame for 
 the sound effects. 
