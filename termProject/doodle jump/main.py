@@ -645,7 +645,7 @@ def mousePressed(app, event):
     lx, rx, ty, by = app.nameChangeButton.buttonHitbox()
     if lx < event.x < rx and ty < event.y < by:
         name = app.getUserInput("Enter your name!\nYour score won't be saved if you don't!")
-        if name != None and name != 'Doodler' and name != '':
+        if name != None or name != 'Doodler' or name != '':
             app.playerName = name
             reWriteFile(app, name)
 
