@@ -29,3 +29,6 @@ https://www.cs.cmu.edu/~112/notes/notes-animations-part4.html#ioMethods
 if you couldn't tell, I drew the springs myself because I couldn't find the 
 sprites online lol
 
+learned how to use pygame sound from this video:
+https://pythonprogramming.net/adding-sounds-music-pygame/
+
