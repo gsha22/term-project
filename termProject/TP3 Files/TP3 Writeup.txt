@@ -248,7 +248,7 @@ Since MVP I've actually added quite a few features, adding ~300 lines since TP2.
       conditionals 
 
 Time Sheet:
-    I think I spent around 15 hours working on these features. Some of the UI/UX
+    I think I spent around 16 hours working on these features. Some of the UI/UX
 stuff was complicated and took longer than expected, and it took some time to 
 figure out how to get the OS functions to work, as well as the sound. 
 
