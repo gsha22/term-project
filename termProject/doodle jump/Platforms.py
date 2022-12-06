@@ -23,7 +23,7 @@ class Platform:
             return Platform.createInitialMap(platformList, numPlatforms, max_y_distance)
 
 
-    def infiniteSpawner(platformList, numPlatforms, max_y_distance): 
+    def infiniteSpawner(platformList, numPlatforms, max_y_distance, difficulty): 
         if len(platformList) == numPlatforms:
             return platformList
         else:
@@ -33,11 +33,13 @@ class Platform:
                     highestY = platform[1]
             lx, hx = 50, 550
             ly = highestY - 20
+            if difficulty:
+                ly = highestY-100
             hy = highestY - max_y_distance
             cx = random.randint(lx, hx)
             cy = random.randint(hy, ly)
             platformList.append([cx, cy])
-            return Platform.infiniteSpawner(platformList, numPlatforms, max_y_distance)
+            return Platform.infiniteSpawner(platformList, numPlatforms, max_y_distance, difficulty)
     
     def basicSpawn(lx, hx, ly, hy):
         cx = random.randint(lx, hx)

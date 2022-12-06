@@ -98,6 +98,7 @@ def appStarted(app):
     app.timerDelay = 1
 
     app.score = 0
+    app.difficulty = False
 
     app.mouseX = 0
     app.mouseY = 0
@@ -235,6 +236,9 @@ def timerFired(app):
             
             if 2500 < app.score and app.max_green_y_distance < 200:
                 app.max_green_y_distance += 1
+            
+            if app.score > 3500:
+                app.difficulty = True
 
             if app.player.yv < 0:
                 app.score += round(abs(app.player.yv)*app.time)
@@ -339,7 +343,7 @@ def spawnPlatforms_and_Hitboxes(app):
     # keeps spawning platforms above playable area 
     if Platform.needsMorePlatforms(app.platforms):
         L = []
-        nextLevels = Platform.infiniteSpawner(L, app.num_green_platforms, app.max_green_y_distance)
+        nextLevels = Platform.infiniteSpawner(L, app.num_green_platforms, app.max_green_y_distance, app.difficulty)
         for platform in nextLevels:
             app.platforms.append(platform)
             lx, ly, rx, ry = Platform.createHitbox(platform[0], platform[1])
