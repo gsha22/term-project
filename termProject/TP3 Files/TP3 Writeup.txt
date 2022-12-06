@@ -246,6 +246,9 @@ Since MVP I've actually added quite a few features, adding ~300 lines since TP2.
  - Added sounds to the game:
     > used pygame to import some sounds and placed them in their respective 
       conditionals 
+ - Made it harder as you go higher again:
+    > Once you reach about 4500, there is a minimum distance of 100 between each
+      platform
 
 Time Sheet:
     I think I spent around 16 hours working on these features. Some of the UI/UX

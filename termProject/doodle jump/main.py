@@ -179,6 +179,7 @@ def timerFired(app):
 
         if app.time == 0:
             createOneGreenPlatform(app)
+            app.difficulty = False
 
         app.time += 0.5
         if app.time % 1000 == 0:
@@ -237,7 +238,7 @@ def timerFired(app):
             if 2500 < app.score and app.max_green_y_distance < 200:
                 app.max_green_y_distance += 1
             
-            if app.score > 3500:
+            if app.score > 4500:
                 app.difficulty = True
 
             if app.player.yv < 0:
