@@ -314,7 +314,6 @@ def xDirectionMovement(app):
                 app.doodle = app.rightDoodle
 
 def keyPressed(app, event):
-    print(event.key)
     if app.playingGame and app.gameOver != True and app.dazed != True: 
         if 'a' not in app.movement and event.key == 'a':
             app.movement.add('a')
