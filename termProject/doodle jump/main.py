@@ -236,7 +236,6 @@ def timerFired(app):
             if 2500 < app.score and app.max_green_y_distance < 200:
                 app.max_green_y_distance += 1
 
-
             if app.player.yv < 0:
                 app.score += round(abs(app.player.yv)*app.time)
                 # jumping down helps reduce the value 
