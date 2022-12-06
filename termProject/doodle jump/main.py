@@ -17,6 +17,8 @@ from Button import CircleButton
 from Button import RectangleButton
 from Enemy import Monster
 
+import pygame
+
 # https://www.cs.cmu.edu/~112/notes/notes-strings.html#basicFileIO
 import ast
 
@@ -163,6 +165,12 @@ def appStarted(app):
 
     app.menuIsPressed = False
 
+    # sounds 
+    pygame.mixer.init()
+    app.jump = pygame.mixer.Sound("jump.wav")
+    app.shoot = pygame.mixer.Sound("pistol_shoot.mp3")
+    app.boing = pygame.mixer.Sound("boing.mp3")
+
 
 
 def timerFired(app):
@@ -183,9 +191,11 @@ def timerFired(app):
         if (Collisions.isCollision(app.startingDoodle.cx, app.startingDoodle.cy,
             app.hitboxes) and app.startingDoodle.yv > 0 ):
             app.startingDoodle.yv = Gravity.jump()
+            pygame.mixer.Sound.play(app.jump)
         if (Collisions.isCollision(app.startingDoodle.cx, app.startingDoodle.cy, 
             app.blueHitboxes) and app.startingDoodle.yv > 0 ):
             app.startingDoodle.yv = Gravity.jump()
+            pygame.mixer.Sound.play(app.jump)
 
 
     if app.playingGame and app.stopGravity == False:
@@ -205,8 +215,10 @@ def timerFired(app):
                 # collision gives boost in negative velocity 
                 if Collisions.isCollision(app.player.cx, app.player.cy, app.hitboxes) and app.player.yv > 0:
                     app.player.yv = Gravity.jump()
+                    pygame.mixer.Sound.play(app.jump)
                 if Collisions.isCollision(app.player.cx, app.player.cy, app.blueHitboxes) and app.player.yv > 0:
                     app.player.yv = Gravity.jump() 
+                    pygame.mixer.Sound.play(app.jump)
                 
             if enemyCollisions(app):
                 app.dazed = True
@@ -294,6 +306,7 @@ def keyPressed(app, event):
             if app.player.xv > 0 and len(app.bullets) == 0:
                 app.doodle = app.rightDoodle
         elif event.key == "Space":
+            pygame.mixer.Sound.play(app.shoot)
             app.bullets.append([app.player.cx, app.player.cy])
 
 def keyReleased(app, event):
@@ -366,6 +379,7 @@ def moveSpring(app):
             if app.dazed != True:
                 app.player.yv = -4
                 app.springImg = app.extendedSpring
+                pygame.mixer.Sound.play(app.boing)
 
 # def drawPlayerHitbox(app, canvas):
 #     lx, rx, ty, by = Player.playerHitbox(app.player.cx, app.player.cy)
