@@ -164,7 +164,7 @@ def appStarted(app):
     app.trophyButton = RectangleButton(450, 700)
 
     app.trophyPressed = False
-
+    
     # leaderboard screen
     app.leaderboard = False
 
