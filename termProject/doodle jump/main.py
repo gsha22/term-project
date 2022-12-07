@@ -2,6 +2,15 @@
 Main file: Runs all classes and game
 '''
 
+'''
+
+Welcome to 112 Jump!! 
+
+If you didn't see the readme directions, the controls are "a" and "d" to move
+side to side, and then space bar to shoot. The goal is to keep jumping as high
+as possible! If you collide with the enemies, you will become dazed and fall off. 
+
+'''
 #imports
 from cmu_112_graphics import *
 import math
