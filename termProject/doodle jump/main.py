@@ -182,6 +182,7 @@ def appStarted(app):
     app.jump = pygame.mixer.Sound("jump.wav")
     app.shoot = pygame.mixer.Sound("pistol_shoot.mp3")
     app.boing = pygame.mixer.Sound("boing.mp3")
+    app.falling = pygame.mixer.Sound("falling.mp3")
 
     # HARD once you get to 50K meters!! 
     app.hardMode = False
@@ -303,6 +304,7 @@ def timerFired(app):
     
             if app.player.cy > 1000:
                 app.gameOver = True
+                pygame.mixer.Sound.play(app.falling)
         
         if app.gameOver:
             if app.player.cy > 1000 and len(app.platforms) > 0:
