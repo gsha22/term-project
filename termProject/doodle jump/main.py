@@ -433,10 +433,6 @@ def moveSpring(app):
                 app.springImg = app.extendedSpring
                 pygame.mixer.Sound.play(app.boing)
 
-# def drawPlayerHitbox(app, canvas):
-#     lx, rx, ty, by = Player.playerHitbox(app.player.cx, app.player.cy)
-#     canvas.create_rectangle(lx, ty, rx, by)
-
 def drawSpring(app, canvas):
     for spring in app.springs:
         cx, cy = spring[0], spring[1]
@@ -496,10 +492,6 @@ def moveBluePlatforms(app):
         if hitbox[1] > 1000:
             app.blueHitboxes.remove(hitbox)
 
-def drawBlueHitboxes(app, canvas):
-    for hitbox in app.blueHitboxes:
-        lx, ly, rx, ry, dx = hitbox
-        canvas.create_rectangle(lx, ly, rx, ry)
 
 def spawnBlueMonster(app):
     if app.gameSeconds % 5 == 0 and len(app.monsterList) < 1:
@@ -659,9 +651,6 @@ def drawPaButtonIsPressed(app, canvas):
         canvas.create_image(app.playAgainButton.cx, app.playAgainButton.cy, 
                                     image=ImageTk.PhotoImage(app.playAgainOn))
 
-# def drawNameChangeButton(app, canvas):
-#     lx, rx, ty, by = app.nameChangeButton.buttonHitbox()
-#     canvas.create_rectangle(lx, ty, rx, by)
 
 # rewrite the file to add new player and their score
 def reWriteFile(app, name):
@@ -748,12 +737,10 @@ def redrawAll(app, canvas):
     if app.playingGame and app.gameOver != True:
         drawPlatform(app, canvas)
         drawBluePlatform(app, canvas)
-        drawBlueHitboxes(app, canvas)
         drawSpring(app, canvas)
         drawBlueMonster(app, canvas)
         drawBullet(app, canvas)
         drawDoodle(app, canvas)  
-        # drawPlayerHitbox(app, canvas)
         drawStars(app, canvas)
         canvas.create_rectangle(0, 0, 600, 50, fill = "burlywood1", outline = "burlywood1")
         canvas.create_text(60, 25, 
@@ -766,7 +753,6 @@ def redrawAll(app, canvas):
         drawGameOverScreen(app, canvas)
         drawPlayAgainButton(app, canvas)
         drawPaButtonIsPressed(app, canvas)
-        # drawNameChangeButton(app, canvas)
 
 
 runApp(width = 600, height = 1000)
