@@ -8,7 +8,8 @@ Welcome to 112 Jump!!
 
 If you didn't see the readme directions, the controls are "a" and "d" to move
 side to side, and then space bar to shoot. The goal is to keep jumping as high
-as possible! If you collide with the enemies, you will become dazed and fall off. 
+as possible! If you collide with the enemies, you will become dazed and fall 
+off. 
 
 '''
 #imports
@@ -542,7 +543,8 @@ def loopStars(app):
 
 def drawStars(app, canvas):
     if app.dazed:
-        canvas.create_image(app.player.cx+10, app.player.cy-30, image=ImageTk.PhotoImage(app.dazedImg))
+        canvas.create_image(app.player.cx+10, app.player.cy-30, 
+                            image=ImageTk.PhotoImage(app.dazedImg))
 
 
 # For starting menu 
@@ -568,11 +570,13 @@ def drawPbIsPressed(app, canvas):
                                     image=ImageTk.PhotoImage(app.pressedPB))
 
 def drawTrophy(app, canvas):
-    canvas.create_image(app.trophyButton.cx, app.trophyButton.cy, image=ImageTk.PhotoImage(app.trophy))
+    canvas.create_image(app.trophyButton.cx, app.trophyButton.cy, 
+                                image=ImageTk.PhotoImage(app.trophy))
 
 def drawTrophyOn(app, canvas):
     if app.trophyPressed:
-        canvas.create_image(app.trophyButton.cx, app.trophyButton.cy, image=ImageTk.PhotoImage(app.trophyOn))
+        canvas.create_image(app.trophyButton.cx, app.trophyButton.cy, 
+                                image=ImageTk.PhotoImage(app.trophyOn))
 
 # for leaderboard screen
 def topTen(app):
@@ -603,14 +607,17 @@ def drawLeaderboard(app, canvas):
         canvas.create_text(300, 200+60*i, 
         text = f"{i+1}.) {leaders[i][0]}: {leaders[i][1]} m", 
         font = ("Comic Sans MS", 20))
-    canvas.create_text(300, 100, text = "Top 10 Jumpers:", font = ("Comic Sans MS bold", 30))
+    canvas.create_text(300, 100, text = "Top 10 Jumpers:", 
+                            font = ("Comic Sans MS bold", 30))
 
 def drawMenuButton(app, canvas):
-    canvas.create_image(app.menuButton.cx, app.menuButton.cy, image=ImageTk.PhotoImage(app.menu))
+    canvas.create_image(app.menuButton.cx, app.menuButton.cy, 
+                            image=ImageTk.PhotoImage(app.menu))
 
 def drawMenuButtonOn(app, canvas):
     if app.menuIsPressed:
-        canvas.create_image(app.menuButton.cx, app.menuButton.cy, image=ImageTk.PhotoImage(app.menuOn))
+        canvas.create_image(app.menuButton.cx, app.menuButton.cy, 
+                                image=ImageTk.PhotoImage(app.menuOn))
 
 
 # for game over screen 
@@ -618,15 +625,17 @@ def drawGameOverScreen(app, canvas):
     canvas.create_image(app.gameOverX, app.gameOverY-200, 
                     image = ImageTk.PhotoImage(app.gameOverTitle))
     canvas.create_text(app.gameOverX, app.gameOverY-20, 
-                text= f"your height: {app.score} m", font = ("Comic Sans MS", 25))
-    # canvas.create_rectangle(app.gameOverX+30, app.gameOverY+20, app.gameOverX+170, app.gameOverY+60)
+            text= f"your height: {app.score} m", font = ("Comic Sans MS", 25))
+
     canvas.create_text(app.gameOverX, app.gameOverY+40, 
-                text = f"your name: {app.playerName}", font = ("Comic Sans MS", 25))
+            text = f"your name: {app.playerName}", font = ("Comic Sans MS", 25))
+
     canvas.create_image(app.gameOverX+180, app.gameOverY+130, image = ImageTk.PhotoImage(app.ttc))
 
     highScoreHolder, score = highScore(app)
     canvas.create_text(app.gameOverX, app.gameOverY-80, 
-        text= f"#1 jumper: {highScoreHolder}: {score} m", font = ("Comic Sans MS", 25))
+        text= f"#1 jumper: {highScoreHolder}: {score} m", 
+                                font = ("Comic Sans MS", 25))
     
 
 def moveGreenPlatformsUp(app):
@@ -744,7 +753,8 @@ def redrawAll(app, canvas):
         drawBullet(app, canvas)
         drawDoodle(app, canvas)  
         drawStars(app, canvas)
-        canvas.create_rectangle(0, 0, 600, 50, fill = "burlywood1", outline = "burlywood1")
+        canvas.create_rectangle(0, 0, 600, 50, fill = "burlywood1", 
+                                                outline = "burlywood1")
         canvas.create_text(60, 25, 
         text= f"{app.score}", font = ("Comic Sans MS", 18))
 
