@@ -174,6 +174,10 @@ def appStarted(app):
     app.shoot = pygame.mixer.Sound("pistol_shoot.mp3")
     app.boing = pygame.mixer.Sound("boing.mp3")
 
+    # HARD once you get to 50K meters!! 
+    app.hardMode = False
+    app.easyMode = True
+
 
 
 def timerFired(app):
@@ -244,10 +248,15 @@ def timerFired(app):
             
             if app.score > 4500:
                 app.difficulty = True
+            
+            if app.score > 30000:
+                app.easyMode = False
+                app.hardMode = True
 
-            if app.player.yv < 0:
-                app.score += round(abs(app.player.yv)*app.time)
-                # jumping down helps reduce the value 
+            if app.player.cy < 450:
+                if app.player.yv < 0:
+                    app.score += round(abs(app.player.yv)*app.time)
+                
             
             spawnPlatforms_and_Hitboxes(app)
             spawnBlueMonster(app)
@@ -354,33 +363,51 @@ def spawnPlatforms_and_Hitboxes(app):
             app.hitboxes.append([lx, ly, rx, ry])
 
     # keeps spawning platforms above playable area 
-    if Platform.needsMorePlatforms(app.platforms):
-        L = []
-        nextLevels = Platform.infiniteSpawner(L, app.num_green_platforms, app.max_green_y_distance, app.difficulty)
-        for platform in nextLevels:
-            app.platforms.append(platform)
-            lx, ly, rx, ry = Platform.createHitbox(platform[0], platform[1])
-            app.hitboxes.append([lx, ly, rx, ry])
-          
-    if app.gameSeconds % 5 == 0:
-        if len(app.bluePlatforms) < 1:
-            bcx, bcy = Platform.basicSpawn(200, 400, -75, -5)
-            blx, bly, brx, bry = Platform.createHitbox(bcx, bcy)
-            app.bluePlatforms.append([bcx, bcy])
-            app.blueHitboxes.append([blx, bly, brx, bry])
+    if app.easyMode:
+        if Platform.needsMorePlatforms(app.platforms):
+            L = []
+            nextLevels = Platform.infiniteSpawner(L, app.num_green_platforms, app.max_green_y_distance, app.difficulty)
+            for platform in nextLevels:
+                    app.platforms.append(platform)
+                    lx, ly, rx, ry = Platform.createHitbox(platform[0], platform[1])
+                    app.hitboxes.append([lx, ly, rx, ry])
+        if app.gameSeconds % 5 == 0:
+            if len(app.bluePlatforms) < 1:
+                bcx, bcy = Platform.basicSpawn(200, 400, -75, -5)
+                blx, bly, brx, bry = Platform.createHitbox(bcx, bcy)
+                dx = 2
+                app.bluePlatforms.append([bcx, bcy, dx])
+                app.blueHitboxes.append([blx, bly, brx, bry, dx])
 
+    if app.hardMode: 
+        if Platform.needsMorePlatforms(app.bluePlatforms):
+            L = []
+            nextLevels = Platform.infiniteSpawner(L, app.num_green_platforms, app.max_green_y_distance, app.difficulty)
+            for platform in nextLevels:
+                platform += [2]
+                app.bluePlatforms.append(platform)
+                dx = 2
+                blx, bly, brx, bry = Platform.createHitbox(platform[0], platform[1])
+                app.blueHitboxes.append([blx, bly, brx, bry, dx])
+        if app.gameSeconds % 5 == 0:
+            if len(app.platforms) < 1:
+                cx, cy = Platform.basicSpawn(200, 400, -75, -5)
+                lx, ly, rx, ry = Platform.createHitbox(cx, cy)
+                app.platforms.append([cx, cy])
+                app.hitboxes.append([lx, ly, rx, ry])
 
 def spawnSpring(app):
-    if len(app.springs) < 1 and app.gameSeconds % 5 == 0:
-        app.springImg = app.spring
-        platformNum = random.randint(0, len(app.platforms)-1)
-        pcx, pcy = app.platforms[platformNum] 
-        if pcy < 0:
-            # plx, ply, prx, pby = Platform.createHitbox(pcx, pcy)
-            # print(plx, prx)
-            scx = pcx - 20
-            scy = pcy - 40
-            app.springs.append([scx, scy])
+    if app.easyMode:
+        if len(app.springs) < 1 and app.gameSeconds % 5 == 0:
+            app.springImg = app.spring
+            platformNum = random.randint(0, len(app.platforms)-1)
+            pcx, pcy = app.platforms[platformNum] 
+            if pcy < 0:
+                # plx, ply, prx, pby = Platform.createHitbox(pcx, pcy)
+                # print(plx, prx)
+                scx = pcx - 20
+                scy = pcy - 40
+                app.springs.append([scx, scy])
 
 
 def moveSpring(app):
@@ -419,7 +446,7 @@ def moveGreenPlatforms(app):
     for platform in app.platforms:
         if app.player.cy < 450:
             if app.player.yv < 0:
-                platform[1] += abs(app.player.yv)*app.time            
+                platform[1] += abs(app.player.yv)*app.time        
         if platform[1] > 1000:
             app.platforms.remove(platform)
     for hitbox in app.hitboxes:
@@ -433,7 +460,7 @@ def moveGreenPlatforms(app):
 
 def drawBluePlatform(app, canvas):
     for platform in app.bluePlatforms:
-        cx, cy = platform
+        cx, cy, dx = platform
         canvas.create_image(cx, cy, image=ImageTk.PhotoImage(app.bluePlatform))
 
 def moveBluePlatforms(app):
@@ -442,9 +469,9 @@ def moveBluePlatforms(app):
         if app.player.cy < 450:
             if app.player.yv < 0:
                 platform[1] += abs(app.player.yv)*app.time  
-        platform[0] += app.bluedx
+        platform[0] += platform[2]
         if platform[0] > 557.5 or platform[0] < 65:
-            app.bluedx *= -1
+            platform[2] *= -1
         if platform[1] > 1000:
             app.bluePlatforms.remove(platform)
     # vertical part 
@@ -453,12 +480,17 @@ def moveBluePlatforms(app):
             if app.player.yv < 0:
                 hitbox[1] += abs(app.player.yv)*app.time
                 hitbox[3] += abs(app.player.yv)*app.time    
-        hitbox[0] += app.bluedx
-        hitbox[2] += app.bluedx
-        if hitbox[0] > 642.5 or hitbox[2] < -65:
-            app.bluedx *= -1
+        hitbox[0] += hitbox[4]
+        hitbox[2] += hitbox[4]
+        if hitbox[2] > 600 or hitbox[0] < 0:
+            hitbox[4] *= -1
         if hitbox[1] > 1000:
             app.blueHitboxes.remove(hitbox)
+
+def drawBlueHitboxes(app, canvas):
+    for hitbox in app.blueHitboxes:
+        lx, ly, rx, ry, dx = hitbox
+        canvas.create_rectangle(lx, ly, rx, ry)
 
 def spawnBlueMonster(app):
     if app.gameSeconds % 5 == 0 and len(app.monsterList) < 1:
@@ -707,6 +739,7 @@ def redrawAll(app, canvas):
     if app.playingGame and app.gameOver != True:
         drawPlatform(app, canvas)
         drawBluePlatform(app, canvas)
+        drawBlueHitboxes(app, canvas)
         drawSpring(app, canvas)
         drawBlueMonster(app, canvas)
         drawBullet(app, canvas)
