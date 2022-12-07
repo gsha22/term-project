@@ -249,7 +249,7 @@ def timerFired(app):
             if app.score > 4500:
                 app.difficulty = True
             
-            if app.score > 30000:
+            if app.score > 20000:
                 app.easyMode = False
                 app.hardMode = True
 
