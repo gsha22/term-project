@@ -241,7 +241,7 @@ def timerFired(app):
                 
             if enemyCollisions(app):
                 app.dazed = True
-                app.player.yv = 0
+                app.player.yv = 1
                 
             if app.dazed:
                 loopStars(app)

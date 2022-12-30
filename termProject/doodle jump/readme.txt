@@ -3,10 +3,6 @@ Jump. It is very similar to the real game because it is a vertical jumper that
 utilizes physics and player movement to reach the highest possible height. Once 
 you finish, you can enter your name and see if you're on the top 10 leaderboard!
 
-
-Here is the demo video for my game: https://youtu.be/82D5F0mUreM
-
-
 Controls:
     "a" to move left
     "d" to move right
@@ -56,3 +52,6 @@ sprites online lol
 learned how to use pygame sound from this video:
 https://pythonprogramming.net/adding-sounds-music-pygame/
 
+sounds: 
+https://freesfx.co.uk/sfx/boing
+https://www.sounds-resource.com/mobile/doodlejump/sound/1636/
