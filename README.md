@@ -1,7 +1,3 @@
 # term-project
 
-
-
-
-Works Cited:
-https://www.pinterest.com/pin/44191640069279768/
+To play the game, go to the tp3 file. Then run the main file after downloading the required packages. Read my readme.txt file within the tp3 file to see some tips that help gameplay. 
