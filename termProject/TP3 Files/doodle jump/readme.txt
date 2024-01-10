@@ -14,7 +14,7 @@ Controls:
 
 Set Up:
 
-To run the game, use the ctrl+b shortcut in the file "main.py." 
+To run the game, run the file "main.py." 
 
 To get the best gameplay, you'll have to change some settings on your computer 
 to have the best sideways movement. Don't worry though, it isn't anything 
